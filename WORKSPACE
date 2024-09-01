@@ -27,9 +27,9 @@ ENVOY_SHA = "7ffff7aa7390581bb02cbc6ebbbfa267fc7e1945"
 
 ENVOY_SHA256 = "e40268bfe33e9ac87ef2fddb0ae7b7e0618a606e23d3ec9fbcf3a7f444cf58c7"
 
-ENVOY_ORG = "envoyproxy"
+ENVOY_ORG = "boanlab"
 
-ENVOY_REPO = "envoy"
+ENVOY_REPO = "envoy-openssl"
 
 # To override with local envoy, just pass `--override_repository=envoy=/PATH/TO/ENVOY` to Bazel or
 # persist the option in `user.bazelrc`.
