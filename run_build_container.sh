@@ -1,0 +1,1 @@
+sudo docker run -it -w /work -v $PWD:/work -v /home/boan/sds/envoy:/envoy gcr.io/istio-testing/build-tools-proxy:master-latest bash
