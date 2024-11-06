@@ -53,7 +53,7 @@ TEST_ENVOY_TARGET ?= //:envoy
 TEST_ENVOY_DEBUG ?= trace
 
 build:
-	bazel $(BAZEL_STARTUP_ARGS) build $(BAZEL_BUILD_ARGS) $(BAZEL_CONFIG_CURRENT) -- $(BAZEL_TARGETS)
+	bazel $(BAZEL_STARTUP_ARGS) build --define=boringssl=fips -c dbg $(BAZEL_BUILD_ARGS) $(BAZEL_CONFIG_CURRENT) -- $(BAZEL_TARGETS)
 
 build_envoy: BAZEL_CONFIG_CURRENT = $(BAZEL_CONFIG_REL)
 build_envoy: BAZEL_TARGETS = //:envoy
@@ -75,7 +75,7 @@ clean:
 
 .PHONY: gen-extensions-doc
 gen-extensions-doc:
-	buf generate --path source/extensions/filters
+	buf generate --path extensions/
 
 gen:
 	@scripts/gen-testdata.sh
@@ -89,7 +89,7 @@ test:
 	  bazel $(BAZEL_STARTUP_ARGS) test $(BAZEL_BUILD_ARGS) $(BAZEL_CONFIG_CURRENT) -- $(BAZEL_TEST_TARGETS); \
 	fi
 	if [ -n "$(E2E_TEST_TARGETS)" ]; then \
-	  env ENVOY_DEBUG=$(TEST_ENVOY_DEBUG) ENVOY_PATH=$(shell bazel $(BAZEL_STARTUP_ARGS) info $(BAZEL_BUILD_ARGS) $(BAZEL_CONFIG_CURRENT) bazel-bin)/envoy $(E2E_TEST_ENVS) GO111MODULE=on go test -timeout 30m $(E2E_TEST_FLAGS) $(E2E_TEST_TARGETS); \
+	  env ENVOY_DEBUG=$(TEST_ENVOY_DEBUG) ENVOY_PATH=$(shell bazel info $(BAZEL_BUILD_ARGS) $(BAZEL_CONFIG_CURRENT) bazel-bin)/envoy $(E2E_TEST_ENVS) GO111MODULE=on go test -timeout 30m $(E2E_TEST_FLAGS) $(E2E_TEST_TARGETS); \
 	fi
 
 test_asan: BAZEL_CONFIG_CURRENT = $(BAZEL_CONFIG_ASAN)
@@ -105,7 +105,7 @@ check:
 	@echo >&2 "Please use \"make lint\" instead."
 	@false
 
-lint: lint-copyright-banner format-go lint-go tidy-go lint-scripts gen-extensions-doc
+lint: lint-copyright-banner format-go lint-go tidy-go lint-scripts
 	@scripts/check-repository.sh
 	@scripts/check-style.sh
 	@scripts/verify-last-flag-matches-upstream.sh
