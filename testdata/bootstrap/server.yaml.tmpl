@@ -11,7 +11,11 @@ admin:
 {{ .Vars.StatsConfig }}
 dynamic_resources:
   ads_config:
+{{- if eq .Vars.EnableDelta "true" }}
     api_type: DELTA_GRPC
+{{- else }}
+    api_type: GRPC
+{{- end}}
     transport_api_version: V3
     grpc_services:
     - envoy_grpc:
@@ -58,7 +62,7 @@ static_resources:
         - endpoint:
             address:
               socket_address:
-                address: 127.0.0.3
+                address: 127.0.0.1
                 port_value: {{ .Ports.BackendPort }}
 {{ .Vars.ServerStaticCluster | indent 2 }}
 {{- if ne .Vars.DisableDirectResponse "true" }}
@@ -66,7 +70,7 @@ static_resources:
   - name: staticreply
     address:
       socket_address:
-        address: 127.0.0.3
+        address: 127.0.0.1
         port_value: {{ .Ports.BackendPort }}
     filter_chains:
     - filters:

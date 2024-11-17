@@ -52,8 +52,9 @@ BAZEL_CONFIG_CURRENT ?= $(BAZEL_CONFIG_DEV)
 TEST_ENVOY_TARGET ?= //:envoy
 TEST_ENVOY_DEBUG ?= trace
 
+# --define=boringssl=fips -c fastbuild
 build:
-	bazel $(BAZEL_STARTUP_ARGS) build --define=boringssl=fips -c dbg $(BAZEL_BUILD_ARGS) $(BAZEL_CONFIG_CURRENT) -- $(BAZEL_TARGETS)
+	bazel $(BAZEL_STARTUP_ARGS) build -c fastbuild $(BAZEL_BUILD_ARGS) $(BAZEL_CONFIG_CURRENT) -- $(BAZEL_TARGETS)  
 
 build_envoy: BAZEL_CONFIG_CURRENT = $(BAZEL_CONFIG_REL)
 build_envoy: BAZEL_TARGETS = //:envoy

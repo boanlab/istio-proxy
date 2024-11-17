@@ -8,13 +8,24 @@
 # leave room for compiler/linker.
 # The number 3G is chosen heuristically to both support large VM and small VM with RBE.
 # Startup options cannot be selected via config.
-startup --host_jvm_args=-Xmx3g
+# JVM 메모리 설정
+startup --host_jvm_args=-Xmx64g  # 메모리 증가
+startup --host_jvm_args=-XX:+UseG1GC
+startup --host_jvm_args=-XX:MaxGCPauseMillis=100
+startup --host_jvm_args=-XX:ParallelGCThreads=32  # 코어 수에 맞춤
+startup --host_jvm_args=-XX:ConcGCThreads=16      # ParallelGCThreads의 1/2
+startup --host_jvm_args=-XX:G1HeapRegionSize=32m  # 큰 힙에 최적화
+
+# 빌드 리소스 설정
+build --local_ram_resources=120000  # 120GB로 증가
+build --local_cpu_resources=HOST_CPUS
+build --jobs=HOST_CPUS
+build --loading_phase_threads=HOST_CPUS
 
 fetch --color=yes
 run --color=yes
 
 build --color=yes
-build --jobs=HOST_CPUS-1
 build --workspace_status_command="bash bazel/get_workspace_status"
 build --incompatible_strict_action_env
 build --java_runtime_version=remotejdk_11
@@ -65,7 +76,7 @@ build:linux --copt=-fPIC
 build:linux --copt=-Wno-deprecated-declarations
 build:linux --cxxopt=-std=c++17 --host_cxxopt=-std=c++17
 build:linux --conlyopt=-fexceptions
-build:linux --fission=dbg,opt
+build:linux --fission=dbg
 build:linux --features=per_object_debug_info
 build:linux --action_env=BAZEL_LINKLIBS=-l%:libstdc++.a
 build:linux --action_env=BAZEL_LINKOPTS=-lm

@@ -16,10 +16,11 @@
 
 #include <atomic>
 
-#include "envoy/router/string_accessor.h"
 #include "envoy/registry/registry.h"
 #include "envoy/server/factory_context.h"
 #include "envoy/singleton/manager.h"
+#include "eval/public/builtin_func_registrar.h"
+#include "eval/public/cel_expr_builder_factory.h"
 #include "extensions/common/metadata_object.h"
 #include "parser/parser.h"
 #include "source/common/grpc/common.h"
@@ -27,23 +28,13 @@
 #include "source/common/http/header_utility.h"
 #include "source/common/network/utility.h"
 #include "source/common/stream_info/utility.h"
+#include "source/extensions/common/utils.h"
+#include "source/extensions/common/filter_objects.h"
 #include "source/extensions/filters/common/expr/cel_state.h"
 #include "source/extensions/filters/common/expr/context.h"
 #include "source/extensions/filters/common/expr/evaluator.h"
 #include "source/extensions/filters/http/common/pass_through_filter.h"
 #include "source/extensions/filters/http/grpc_stats/grpc_stats_filter.h"
-
-#if defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#endif
-
-#include "eval/public/builtin_func_registrar.h"
-#include "eval/public/cel_expr_builder_factory.h"
-
-#if defined(__GNUC__)
-#pragma GCC diagnostic pop
-#endif
 
 namespace Envoy {
 namespace Extensions {
@@ -51,26 +42,9 @@ namespace HttpFilters {
 namespace IstioStats {
 
 namespace {
-
-constexpr absl::string_view NamespaceKey = "/ns/";
-
-absl::optional<absl::string_view> getNamespace(absl::string_view principal) {
-  // The namespace is a substring in principal with format:
-  // "<DOMAIN>/ns/<NAMESPACE>/sa/<SERVICE-ACCOUNT>". '/' is not allowed to
-  // appear in actual content except as delimiter between tokens.
-  size_t begin = principal.find(NamespaceKey);
-  if (begin == absl::string_view::npos) {
-    return {};
-  }
-  begin += NamespaceKey.length();
-  size_t end = principal.find('/', begin);
-  size_t len = (end == std::string::npos ? end : end - begin);
-  return {principal.substr(begin, len)};
-}
-
 constexpr absl::string_view CustomStatNamespace = "istiocustom";
 
-absl::string_view extractString(const ProtobufWkt::Struct& metadata, absl::string_view key) {
+absl::string_view extractString(const ProtobufWkt::Struct& metadata, const std::string& key) {
   const auto& it = metadata.fields().find(key);
   if (it == metadata.fields().end()) {
     return {};
@@ -79,7 +53,7 @@ absl::string_view extractString(const ProtobufWkt::Struct& metadata, absl::strin
 }
 
 absl::string_view extractMapString(const ProtobufWkt::Struct& metadata, const std::string& map_key,
-                                   absl::string_view key) {
+                                   const std::string& key) {
   const auto& it = metadata.fields().find(map_key);
   if (it == metadata.fields().end()) {
     return {};
@@ -180,15 +154,14 @@ struct Context : public Singleton::Instance {
         workload_name_(pool_.add(extractString(node.metadata(), "WORKLOAD_NAME"))),
         namespace_(pool_.add(extractString(node.metadata(), "NAMESPACE"))),
         canonical_name_(pool_.add(
-            extractMapString(node.metadata(), "LABELS", Istio::Common::CanonicalNameLabel))),
+            extractMapString(node.metadata(), "LABELS", "service.istio.io/canonical-name"))),
         canonical_revision_(pool_.add(
-            extractMapString(node.metadata(), "LABELS", Istio::Common::CanonicalRevisionLabel))),
+            extractMapString(node.metadata(), "LABELS", "service.istio.io/canonical-revision"))),
         cluster_name_(pool_.add(extractString(node.metadata(), "CLUSTER_ID"))),
-        app_name_(pool_.add(extractMapString(node.metadata(), "LABELS", Istio::Common::AppLabel))),
-        app_version_(
-            pool_.add(extractMapString(node.metadata(), "LABELS", Istio::Common::VersionLabel))),
-        waypoint_(pool_.add("waypoint")), istio_build_(pool_.add("istio_build")),
-        component_(pool_.add("component")), proxy_(pool_.add("proxy")), tag_(pool_.add("tag")),
+        app_name_(pool_.add(extractMapString(node.metadata(), "LABELS", "app"))),
+        app_version_(pool_.add(extractMapString(node.metadata(), "LABELS", "version"))),
+        istio_build_(pool_.add("istio_build")), component_(pool_.add("component")),
+        proxy_(pool_.add("proxy")), tag_(pool_.add("tag")),
         istio_version_(pool_.add(extractString(node.metadata(), "ISTIO_VERSION"))) {
     all_metrics_ = {
         {"requests_total", requests_total_},
@@ -299,7 +272,6 @@ struct Context : public Singleton::Instance {
   const Stats::StatName cluster_name_;
   const Stats::StatName app_name_;
   const Stats::StatName app_version_;
-  const Stats::StatName waypoint_;
 
   // istio_build metric:
   // Publishes Istio version for the proxy as a gauge, sample data:
@@ -437,7 +409,7 @@ public:
     if (rotate_interval_ms_ > 0) {
       ASSERT(delete_interval_ms_ < rotate_interval_ms_);
       ASSERT(delete_interval_ms_ >= 1000);
-      Event::Dispatcher& dispatcher = factory_context.serverFactoryContext().mainThreadDispatcher();
+      Event::Dispatcher& dispatcher = factory_context.mainThreadDispatcher();
       rotate_timer_ = dispatcher.createTimer([this] { onRotate(); });
       delete_timer_ = dispatcher.createTimer([this] { onDelete(); });
       rotate_timer_->enableTimer(std::chrono::milliseconds(rotate_interval_ms_));
@@ -481,12 +453,11 @@ private:
 struct Config : public Logger::Loggable<Logger::Id::filter> {
   Config(const stats::PluginConfig& proto_config,
          Server::Configuration::FactoryContext& factory_context)
-      : context_(factory_context.serverFactoryContext().singletonManager().getTyped<Context>(
+      : context_(factory_context.singletonManager().getTyped<Context>(
             SINGLETON_MANAGER_REGISTERED_NAME(Context),
             [&factory_context] {
-              return std::make_shared<Context>(
-                  factory_context.serverFactoryContext().scope().symbolTable(),
-                  factory_context.serverFactoryContext().localInfo().node());
+              return std::make_shared<Context>(factory_context.serverScope().symbolTable(),
+                                               factory_context.localInfo().node());
             })),
         scope_(factory_context, PROTOBUF_GET_MS_OR_DEFAULT(proto_config, rotation_interval, 0),
                PROTOBUF_GET_MS_OR_DEFAULT(proto_config, graceful_deletion_interval,
@@ -494,11 +465,10 @@ struct Config : public Logger::Loggable<Logger::Id::filter> {
         disable_host_header_fallback_(proto_config.disable_host_header_fallback()),
         report_duration_(
             PROTOBUF_GET_MS_OR_DEFAULT(proto_config, tcp_reporting_duration, /* 5s */ 5000)) {
-    recordVersion(factory_context);
     reporter_ = Reporter::ClientSidecar;
     switch (proto_config.reporter()) {
     case stats::Reporter::UNSPECIFIED:
-      switch (factory_context.listenerInfo().direction()) {
+      switch (factory_context.direction()) {
       case envoy::config::core::v3::TrafficDirection::INBOUND:
         reporter_ = Reporter::ServerSidecar;
         break;
@@ -765,13 +735,13 @@ struct Config : public Logger::Loggable<Logger::Id::filter> {
     bool evaluated_{false};
   };
 
-  void recordVersion(Server::Configuration::FactoryContext& factory_context) {
+  void recordVersion() {
     Stats::StatNameTagVector tags;
     tags.push_back({context_->component_, context_->proxy_});
     tags.push_back({context_->tag_, context_->istio_version_.empty() ? context_->unknown_
                                                                      : context_->istio_version_});
 
-    Stats::Utility::gaugeFromStatNames(factory_context.scope(),
+    Stats::Utility::gaugeFromStatNames(*scope(),
                                        {context_->stat_namespace_, context_->istio_build_},
                                        Stats::Gauge::ImportMode::Accumulate, tags)
         .set(1);
@@ -802,10 +772,8 @@ public:
     tags_.reserve(25);
     switch (config_->reporter()) {
     case Reporter::ServerSidecar:
-      tags_.push_back({context_.reporter_, context_.destination_});
-      break;
     case Reporter::ServerGateway:
-      tags_.push_back({context_.reporter_, context_.waypoint_});
+      tags_.push_back({context_.reporter_, context_.destination_});
       break;
     case Reporter::ClientSidecar:
       tags_.push_back({context_.reporter_, context_.source_});
@@ -825,12 +793,10 @@ public:
   }
 
   // AccessLog::Instance
-  void log(const Formatter::HttpFormatterContext& log_context,
-           const StreamInfo::StreamInfo& info) override {
-    const Http::RequestHeaderMap* request_headers = &log_context.requestHeaders();
-    const Http::ResponseHeaderMap* response_headers = &log_context.responseHeaders();
-    const Http::ResponseTrailerMap* response_trailers = &log_context.responseTrailers();
-
+  void log(const Http::RequestHeaderMap* request_headers,
+           const Http::ResponseHeaderMap* response_headers,
+           const Http::ResponseTrailerMap* response_trailers, const StreamInfo::StreamInfo& info,
+           AccessLog::AccessLogType) override {
     reportHelper(true);
     if (is_grpc_) {
       tags_.push_back({context_.request_protocol_, context_.grpc_});
@@ -1012,7 +978,6 @@ private:
     // Compute destination service with client-side fallbacks.
     absl::string_view service_host;
     absl::string_view service_host_name;
-    absl::string_view service_namespace;
     if (!config_->disable_host_header_fallback_) {
       const auto* headers = info.getRequestHeaders();
       if (headers && headers->Host()) {
@@ -1029,7 +994,6 @@ private:
       if (cluster_info && cluster_info.value()) {
         const auto& cluster_name = cluster_info.value()->name();
         if (cluster_name == "BlackHoleCluster" || cluster_name == "PassthroughCluster" ||
-            cluster_name == "InboundPassthroughCluster" ||
             cluster_name == "InboundPassthroughClusterIpv4" ||
             cluster_name == "InboundPassthroughClusterIpv6") {
           service_host_name = cluster_name;
@@ -1047,10 +1011,6 @@ private:
                   service_host = host_it->second.string_value();
                 }
                 const auto& name_it = service.find("name");
-                const auto& namespace_it = service.find("namespace");
-                if (namespace_it != service.end()) {
-                  service_namespace = namespace_it->second.string_value();
-                }
                 if (name_it != service.end()) {
                   service_host_name = name_it->second.string_value();
                 } else {
@@ -1068,10 +1028,10 @@ private:
     switch (config_->reporter()) {
     case Reporter::ServerSidecar:
     case Reporter::ServerGateway: {
-      auto peer_principal =
-          info.filterState().getDataReadOnly<Router::StringAccessor>("io.istio.peer_principal");
-      auto local_principal =
-          info.filterState().getDataReadOnly<Router::StringAccessor>("io.istio.local_principal");
+      auto peer_principal = info.filterState().getDataReadOnly<Router::StringAccessor>(
+          Extensions::Common::PeerPrincipalKey);
+      auto local_principal = info.filterState().getDataReadOnly<Router::StringAccessor>(
+          Extensions::Common::LocalPrincipalKey);
       peer_san = peer_principal ? peer_principal->asString() : "";
       local_san = local_principal ? local_principal->asString() : "";
 
@@ -1107,7 +1067,7 @@ private:
     // using peer metadata, otherwise.
     absl::string_view peer_namespace;
     if (!peer_san.empty()) {
-      const auto san_namespace = getNamespace(peer_san);
+      const auto san_namespace = Utils::GetNamespace(peer_san);
       if (san_namespace) {
         peer_namespace = san_namespace.value();
       }
@@ -1151,20 +1111,12 @@ private:
         tags_.push_back(
             {context_.destination_workload_,
              endpoint_peer ? pool_.add(endpoint_peer->workload_name_) : context_.unknown_});
-        tags_.push_back({context_.destination_workload_namespace_,
-                         endpoint_peer && !endpoint_peer->namespace_name_.empty()
-                             ? pool_.add(endpoint_peer->namespace_name_)
-                             : context_.unknown_});
+        tags_.push_back({context_.destination_workload_namespace_, context_.namespace_});
         tags_.push_back({context_.destination_principal_,
-                         endpoint_peer ? pool_.add(endpoint_peer->identity_) : context_.unknown_});
+                         !local_san.empty() ? pool_.add(local_san) : context_.unknown_});
         // Endpoint encoding does not have app and version.
-        tags_.push_back(
-            {context_.destination_app_, endpoint_peer && !endpoint_peer->app_name_.empty()
-                                            ? pool_.add(endpoint_peer->app_name_)
-                                            : context_.unknown_});
-        tags_.push_back({context_.destination_version_, endpoint_peer
-                                                            ? pool_.add(endpoint_peer->app_version_)
-                                                            : context_.unknown_});
+        tags_.push_back({context_.destination_app_, context_.unknown_});
+        tags_.push_back({context_.destination_version_, context_.unknown_});
         auto canonical_name =
             endpoint_peer ? pool_.add(endpoint_peer->canonical_name_) : context_.unknown_;
         tags_.push_back({context_.destination_service_,
@@ -1235,11 +1187,8 @@ private:
       tags_.push_back({context_.destination_service_name_, service_host_name.empty()
                                                                ? context_.unknown_
                                                                : pool_.add(service_host_name)});
-      tags_.push_back(
-          {context_.destination_service_namespace_,
-           !service_namespace.empty()
-               ? pool_.add(service_namespace)
-               : (!peer_namespace.empty() ? pool_.add(peer_namespace) : context_.unknown_)});
+      tags_.push_back({context_.destination_service_namespace_,
+                       !peer_namespace.empty() ? pool_.add(peer_namespace) : context_.unknown_});
       tags_.push_back({context_.destination_cluster_, peer && !peer->cluster_name_.empty()
                                                           ? pool_.add(peer->cluster_name_)
                                                           : context_.unknown_});
@@ -1269,13 +1218,12 @@ private:
 
 } // namespace
 
-absl::StatusOr<Http::FilterFactoryCb> IstioStatsFilterConfigFactory::createFilterFactoryFromProto(
-    const Protobuf::Message& proto_config, const std::string&,
+Http::FilterFactoryCb IstioStatsFilterConfigFactory::createFilterFactoryFromProtoTyped(
+    const stats::PluginConfig& proto_config, const std::string&,
     Server::Configuration::FactoryContext& factory_context) {
-  factory_context.serverFactoryContext().api().customStatNamespaces().registerStatNamespace(
-      CustomStatNamespace);
-  ConfigSharedPtr config = std::make_shared<Config>(
-      dynamic_cast<const stats::PluginConfig&>(proto_config), factory_context);
+  factory_context.api().customStatNamespaces().registerStatNamespace(CustomStatNamespace);
+  ConfigSharedPtr config = std::make_shared<Config>(proto_config, factory_context);
+  config->recordVersion();
   return [config](Http::FilterChainFactoryCallbacks& callbacks) {
     auto filter = std::make_shared<IstioStatsFilter>(config);
     callbacks.addStreamFilter(filter);
@@ -1288,13 +1236,12 @@ absl::StatusOr<Http::FilterFactoryCb> IstioStatsFilterConfigFactory::createFilte
 REGISTER_FACTORY(IstioStatsFilterConfigFactory,
                  Server::Configuration::NamedHttpFilterConfigFactory);
 
-absl::StatusOr<Network::FilterFactoryCb>
-IstioStatsNetworkFilterConfigFactory::createFilterFactoryFromProto(
-    const Protobuf::Message& proto_config, Server::Configuration::FactoryContext& factory_context) {
-  factory_context.serverFactoryContext().api().customStatNamespaces().registerStatNamespace(
-      CustomStatNamespace);
-  ConfigSharedPtr config = std::make_shared<Config>(
-      dynamic_cast<const stats::PluginConfig&>(proto_config), factory_context);
+Network::FilterFactoryCb IstioStatsNetworkFilterConfigFactory::createFilterFactoryFromProtoTyped(
+    const stats::PluginConfig& proto_config,
+    Server::Configuration::FactoryContext& factory_context) {
+  factory_context.api().customStatNamespaces().registerStatNamespace(CustomStatNamespace);
+  ConfigSharedPtr config = std::make_shared<Config>(proto_config, factory_context);
+  config->recordVersion();
   return [config](Network::FilterManager& filter_manager) {
     filter_manager.addReadFilter(std::make_shared<IstioStatsFilter>(config));
   };

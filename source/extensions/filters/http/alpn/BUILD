@@ -19,11 +19,10 @@ load(
     "@envoy//bazel:envoy_build_system.bzl",
     "envoy_cc_library",
     "envoy_cc_test",
+    "envoy_package",
 )
 
-package(default_visibility = ["//visibility:public"])
-
-licenses(["notice"])
+envoy_package()
 
 envoy_cc_library(
     name = "alpn_filter",
@@ -31,7 +30,7 @@ envoy_cc_library(
     hdrs = ["alpn_filter.h"],
     repository = "@envoy",
     deps = [
-        ":config_cc_proto",
+        "//external:alpn_filter_config_cc_proto",
         "@envoy//envoy/http:filter_interface",
         "@envoy//source/common/network:application_protocol_lib",
         "@envoy//source/extensions/filters/http/common:pass_through_filter_lib",
@@ -43,10 +42,12 @@ envoy_cc_library(
     srcs = ["config.cc"],
     hdrs = ["config.h"],
     repository = "@envoy",
+    visibility = ["//visibility:public"],
     deps = [
         ":alpn_filter",
+        "//source/extensions/common:filter_names_lib",
         "@envoy//envoy/registry",
-        "@envoy//source/exe:all_extensions_lib",
+        "@envoy//source/exe:envoy_common_lib",
         "@envoy//source/extensions/filters/http/common:factory_base_lib",
     ],
 )
@@ -80,14 +81,4 @@ envoy_cc_test(
         "@envoy//test/mocks/server:server_mocks",
         "@envoy//test/test_common:utility_lib",
     ],
-)
-
-cc_proto_library(
-    name = "config_cc_proto",
-    deps = ["config"],
-)
-
-proto_library(
-    name = "config",
-    srcs = ["config.proto"],
 )

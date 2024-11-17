@@ -29,9 +29,8 @@
 #include "source/extensions/common/workload_discovery/extension.pb.validate.h"
 
 namespace Envoy::Extensions::Common::WorkloadDiscovery {
+
 namespace {
-constexpr absl::string_view DefaultNamespace = "default";
-constexpr absl::string_view DefaultTrustDomain = "cluster.local";
 Istio::Common::WorkloadMetadataObject convert(const istio::workload::Workload& workload) {
   auto workload_type = Istio::Common::WorkloadType::Deployment;
   switch (workload.workload_type()) {
@@ -47,23 +46,10 @@ Istio::Common::WorkloadMetadataObject convert(const istio::workload::Workload& w
   default:
     break;
   }
-
-  absl::string_view ns = workload.namespace_();
-  absl::string_view trust_domain = workload.trust_domain();
-  // Trust domain may be elided if it's equal to "cluster.local"
-  if (trust_domain.empty()) {
-    trust_domain = DefaultTrustDomain;
-  }
-  // The namespace may be elided if it's equal to "default"
-  if (ns.empty()) {
-    ns = DefaultNamespace;
-  }
-  const auto identity = absl::StrCat("spiffe://", trust_domain, "/ns/", workload.namespace_(),
-                                     "/sa/", workload.service_account());
   return Istio::Common::WorkloadMetadataObject(
       workload.name(), workload.cluster_id(), workload.namespace_(), workload.workload_name(),
       workload.canonical_name(), workload.canonical_revision(), workload.canonical_name(),
-      workload.canonical_revision(), workload_type, identity);
+      workload.canonical_revision(), workload_type);
 }
 } // namespace
 
@@ -93,8 +79,8 @@ public:
         const uint64_t high = absl::Uint128High64(ipv6->address());
         const uint64_t low = absl::Uint128Low64(ipv6->address());
         std::array<uint8_t, 16> output;
-        absl::little_endian::Store64(&output, low);
-        absl::little_endian::Store64(&output[8], high);
+        absl::little_endian::Store64(&output, high);
+        absl::little_endian::Store64(&output[8], low);
         return tls_->get(std::string(output.begin(), output.end()));
       }
     }
@@ -102,40 +88,31 @@ public:
   }
 
 private:
-  using IdToAddress = absl::flat_hash_map<std::string, std::vector<std::string>>;
-  using IdToAddressSharedPtr = std::shared_ptr<IdToAddress>;
-  using AddressToWorkload = absl::flat_hash_map<std::string, Istio::Common::WorkloadMetadataObject>;
-  using AddressToWorkloadSharedPtr = std::shared_ptr<AddressToWorkload>;
+  using AddressIndex = absl::flat_hash_map<std::string, Istio::Common::WorkloadMetadataObject>;
+  using AddressIndexSharedPtr = std::shared_ptr<AddressIndex>;
+  using AddressVector = std::vector<std::string>;
+  using AddressVectorSharedPtr = std::shared_ptr<AddressVector>;
 
   struct ThreadLocalProvider : public ThreadLocal::ThreadLocalObject {
-    void reset(const AddressToWorkloadSharedPtr& index) { address_to_workload_ = *index; }
-    void update(const AddressToWorkloadSharedPtr& added_addresses,
-                const IdToAddressSharedPtr& added_ids,
-                const std::shared_ptr<std::vector<std::string>> removed) {
-      for (const auto& id : *removed) {
-        for (const auto& address : id_to_address_[id]) {
-          address_to_workload_.erase(address);
-        }
-        id_to_address_.erase(id);
+    void reset(const AddressIndexSharedPtr& index) { address_index_ = *index; }
+    void update(const AddressIndexSharedPtr& added, const AddressVectorSharedPtr& removed) {
+      for (const auto& [address, workload] : *added) {
+        address_index_.emplace(address, workload);
       }
-      for (const auto& [address, workload] : *added_addresses) {
-        address_to_workload_.emplace(address, workload);
-      }
-      for (const auto& [id, address] : *added_ids) {
-        id_to_address_.emplace(id, address);
+      for (const auto& address : *removed) {
+        address_index_.erase(address);
       }
     }
-    size_t total() const { return address_to_workload_.size(); }
+    size_t total() const { return address_index_.size(); }
     // Returns by-value since the flat map does not provide pointer stability.
     std::optional<Istio::Common::WorkloadMetadataObject> get(const std::string& address) {
-      const auto it = address_to_workload_.find(address);
-      if (it != address_to_workload_.end()) {
+      const auto it = address_index_.find(address);
+      if (it != address_index_.end()) {
         return it->second;
       }
       return {};
     }
-    IdToAddress id_to_address_;
-    AddressToWorkload address_to_workload_;
+    AddressIndex address_index_;
   };
   class WorkloadSubscription : Config::SubscriptionBase<istio::workload::Workload> {
   public:
@@ -143,13 +120,11 @@ private:
         : Config::SubscriptionBase<istio::workload::Workload>(
               parent.factory_context_.messageValidationVisitor(), "uid"),
           parent_(parent) {
-      subscription_ = THROW_OR_RETURN_VALUE(
-          parent.factory_context_.clusterManager()
-              .subscriptionFactory()
-              .subscriptionFromConfigSource(parent.config_source_,
-                                            Grpc::Common::typeUrl(getResourceName()),
-                                            *parent.scope_, *this, resource_decoder_, {}),
-          Config::SubscriptionPtr);
+      subscription_ = parent.factory_context_.clusterManager()
+                          .subscriptionFactory()
+                          .subscriptionFromConfigSource(
+                              parent.config_source_, Grpc::Common::typeUrl(getResourceName()),
+                              *parent.scope_, *this, resource_decoder_, {});
     }
     void start() { subscription_->start({}); }
 
@@ -157,7 +132,7 @@ private:
     // Config::SubscriptionCallbacks
     absl::Status onConfigUpdate(const std::vector<Config::DecodedResourceRef>& resources,
                                 const std::string&) override {
-      AddressToWorkloadSharedPtr index = std::make_shared<AddressToWorkload>();
+      AddressIndexSharedPtr index = std::make_shared<AddressIndex>();
       for (const auto& resource : resources) {
         const auto& workload =
             dynamic_cast<const istio::workload::Workload&>(resource.get().resource());
@@ -169,27 +144,26 @@ private:
       parent_.reset(index);
       return absl::OkStatus();
     }
+    // TODO(kuat) This is not working correctly due to breakage by "uid" PR.
     absl::Status onConfigUpdate(const std::vector<Config::DecodedResourceRef>& added_resources,
                                 const Protobuf::RepeatedPtrField<std::string>& removed_resources,
                                 const std::string&) override {
-      IdToAddressSharedPtr added_ids = std::make_shared<IdToAddress>();
-      AddressToWorkloadSharedPtr added_addresses = std::make_shared<AddressToWorkload>();
+      AddressIndexSharedPtr added = std::make_shared<AddressIndex>();
       for (const auto& resource : added_resources) {
         const auto& workload =
             dynamic_cast<const istio::workload::Workload&>(resource.get().resource());
         const auto& metadata = convert(workload);
+        added->emplace(workload.uid(), metadata);
         for (const auto& addr : workload.addresses()) {
-          added_addresses->emplace(addr, metadata);
+          added->emplace(addr, metadata);
         }
-        added_ids->emplace(workload.uid(), std::vector<std::string>(workload.addresses().begin(),
-                                                                    workload.addresses().end()));
       }
-      auto removed = std::make_shared<std::vector<std::string>>();
+      AddressVectorSharedPtr removed = std::make_shared<AddressVector>();
       removed->reserve(removed_resources.size());
       for (const auto& resource : removed_resources) {
         removed->push_back(resource);
       }
-      parent_.update(added_addresses, added_ids, removed);
+      parent_.update(added, removed);
       return absl::OkStatus();
     }
     void onConfigUpdateFailed(Config::ConfigUpdateFailureReason, const EnvoyException*) override {
@@ -200,17 +174,14 @@ private:
     Config::SubscriptionPtr subscription_;
   };
 
-  void reset(AddressToWorkloadSharedPtr index) {
+  void reset(AddressIndexSharedPtr index) {
     tls_.runOnAllThreads([index](OptRef<ThreadLocalProvider> tls) { tls->reset(index); });
     stats_.total_.set(tls_->total());
   }
 
-  void update(const AddressToWorkloadSharedPtr& added_addresses,
-              const IdToAddressSharedPtr& added_ids,
-              const std::shared_ptr<std::vector<std::string>> removed) {
-    tls_.runOnAllThreads([added_addresses, added_ids, removed](OptRef<ThreadLocalProvider> tls) {
-      tls->update(added_addresses, added_ids, removed);
-    });
+  void update(AddressIndexSharedPtr added, AddressVectorSharedPtr removed) {
+    tls_.runOnAllThreads(
+        [added, removed](OptRef<ThreadLocalProvider> tls) { tls->update(added, removed); });
     stats_.total_.set(tls_->total());
   }
 

@@ -22,6 +22,8 @@ import (
 	extensionservice "github.com/envoyproxy/go-control-plane/envoy/service/extension/v3"
 	"github.com/envoyproxy/go-control-plane/pkg/cache/v3"
 	"github.com/envoyproxy/go-control-plane/pkg/server/v3"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -49,8 +51,8 @@ func (es *ExtensionServer) StreamExtensionConfigs(stream extensionservice.Extens
 	return es.Server.StreamHandler(stream, APIType)
 }
 
-func (es *ExtensionServer) DeltaExtensionConfigs(stream extensionservice.ExtensionConfigDiscoveryService_DeltaExtensionConfigsServer) error {
-	return es.Server.DeltaStreamHandler(stream, APIType)
+func (es *ExtensionServer) DeltaExtensionConfigs(_ extensionservice.ExtensionConfigDiscoveryService_DeltaExtensionConfigsServer) error {
+	return status.Errorf(codes.Unimplemented, "not implemented")
 }
 
 func (es *ExtensionServer) FetchExtensionConfigs(ctx context.Context, req *discovery.DiscoveryRequest) (*discovery.DiscoveryResponse, error) {

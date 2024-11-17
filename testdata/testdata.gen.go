@@ -1,7 +1,6 @@
 // Code generated for package testdata by go-bindata DO NOT EDIT. (@generated)
 // sources:
 // bootstrap/client.yaml.tmpl
-// bootstrap/client_cluster_metadata_precedence.yaml.tmpl
 // bootstrap/otel_stats.yaml.tmpl
 // bootstrap/server.yaml.tmpl
 // bootstrap/stats.yaml.tmpl
@@ -78,7 +77,7 @@ admin:
 {{ .Vars.StatsConfig }}
 dynamic_resources:
   ads_config:
-    api_type: DELTA_GRPC
+    api_type: GRPC
     transport_api_version: V3
     grpc_services:
     - envoy_grpc:
@@ -164,105 +163,6 @@ func bootstrapClientYamlTmpl() (*asset, error) {
 	return a, nil
 }
 
-var _bootstrapClient_cluster_metadata_precedenceYamlTmpl = []byte(`node:
-  id: client
-  cluster: test-cluster
-  metadata: { {{ .Vars.ClientMetadata | fill }} }
-admin:
-  access_log_path: /dev/null
-  address:
-    socket_address:
-      address: 127.0.0.1
-      port_value: {{ .Ports.ClientAdmin }}
-{{ .Vars.StatsConfig }}
-dynamic_resources:
-  ads_config:
-    api_type: DELTA_GRPC
-    transport_api_version: V3
-    grpc_services:
-    - envoy_grpc:
-        cluster_name: xds_cluster
-  cds_config:
-    ads: {}
-    resource_api_version: V3
-  lds_config:
-    ads: {}
-    resource_api_version: V3
-static_resources:
-  clusters:
-  - connect_timeout: 5s
-    load_assignment:
-      cluster_name: xds_cluster
-      endpoints:
-      - lb_endpoints:
-        - endpoint:
-            address:
-              socket_address:
-                address: 127.0.0.1
-                port_value: {{ .Ports.XDSPort }}
-    http2_protocol_options: {}
-    name: xds_cluster
-  - name: server-outbound-cluster
-    connect_timeout: 5s
-    type: STATIC
-    http2_protocol_options: {}
-    {{- if ne .Vars.ElideServerMetadata "true" }}
-    metadata:
-      filter_metadata:
-        istio:
-          services:
-            - host: server.default.svc.cluster.local
-              name: server
-              namespace: server
-    {{- end }}
-    load_assignment:
-      cluster_name: server-outbound-cluster
-      endpoints:
-      - lb_endpoints:
-        - endpoint:
-            address:
-              socket_address:
-                address: 127.0.0.2
-                port_value: {{ .Ports.ServerPort }}
-          {{- if eq .Vars.EnableEndpointMetadata "true" }}
-          metadata:
-            filter_metadata:
-              istio:
-                workload: ratings-v1;default;ratings;version-1;server-cluster
-          {{- end }}
-{{ .Vars.ClientTLSContext | indent 4 }}
-{{ .Vars.ClientStaticCluster | indent 2 }}
-bootstrap_extensions:
-- name: envoy.bootstrap.internal_listener
-  typed_config:
-    "@type": type.googleapis.com/udpa.type.v1.TypedStruct
-    type_url: type.googleapis.com/envoy.extensions.bootstrap.internal_listener.v3.InternalListener
-{{- if eq .Vars.EnableMetadataDiscovery "true" }}
-- name: metadata_discovery
-  typed_config:
-    "@type": type.googleapis.com/udpa.type.v1.TypedStruct
-    type_url: type.googleapis.com/istio.workload.BootstrapExtension
-    value:
-      config_source:
-        ads: {}
-{{- end }}
-`)
-
-func bootstrapClient_cluster_metadata_precedenceYamlTmplBytes() ([]byte, error) {
-	return _bootstrapClient_cluster_metadata_precedenceYamlTmpl, nil
-}
-
-func bootstrapClient_cluster_metadata_precedenceYamlTmpl() (*asset, error) {
-	bytes, err := bootstrapClient_cluster_metadata_precedenceYamlTmplBytes()
-	if err != nil {
-		return nil, err
-	}
-
-	info := bindataFileInfo{name: "bootstrap/client_cluster_metadata_precedence.yaml.tmpl", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
-	a := &asset{bytes: bytes, info: info}
-	return a, nil
-}
-
 var _bootstrapOtel_statsYamlTmpl = []byte(`stats_sinks:
 - name: otel
   typed_config:
@@ -305,7 +205,11 @@ admin:
 {{ .Vars.StatsConfig }}
 dynamic_resources:
   ads_config:
+{{- if eq .Vars.EnableDelta "true" }}
     api_type: DELTA_GRPC
+{{- else }}
+    api_type: GRPC
+{{- end}}
     transport_api_version: V3
     grpc_services:
     - envoy_grpc:
@@ -352,7 +256,7 @@ static_resources:
         - endpoint:
             address:
               socket_address:
-                address: 127.0.0.3
+                address: 127.0.0.1
                 port_value: {{ .Ports.BackendPort }}
 {{ .Vars.ServerStaticCluster | indent 2 }}
 {{- if ne .Vars.DisableDirectResponse "true" }}
@@ -360,7 +264,7 @@ static_resources:
   - name: staticreply
     address:
       socket_address:
-        address: 127.0.0.3
+        address: 127.0.0.1
         port_value: {{ .Ports.BackendPort }}
     filter_chains:
     - filters:
@@ -644,6 +548,10 @@ filter_chains:
       cluster: original_dst
       tunneling_config:
         hostname: "%DOWNSTREAM_LOCAL_ADDRESS%"
+        headers_to_add:
+        - header:
+            key: baggage
+            value: k8s.deployment.name=productpage-v1
       stat_prefix: outbound
 `)
 
@@ -898,13 +806,11 @@ filter_chains:
           value:
             on_request_headers:
             - object_key: io.istio.peer_principal
-              factory_key: envoy.string
               format_string:
                 text_format_source:
                   inline_string: "%DOWNSTREAM_PEER_URI_SAN%"
               shared_with_upstream: ONCE
             - object_key: io.istio.local_principal
-              factory_key: envoy.string
               format_string:
                 text_format_source:
                   inline_string: "%DOWNSTREAM_LOCAL_URI_SAN%"
@@ -916,7 +822,7 @@ filter_chains:
           type_url: type.googleapis.com/io.istio.http.peer_metadata.Config
           value:
             downstream_discovery:
-            - workload_discovery: {}
+            - baggage: {}
             shared_with_upstream: true
       - name: envoy.filters.http.router
         typed_config:
@@ -1039,19 +945,18 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() (*asset, error){
-	"bootstrap/client.yaml.tmpl":                             bootstrapClientYamlTmpl,
-	"bootstrap/client_cluster_metadata_precedence.yaml.tmpl": bootstrapClient_cluster_metadata_precedenceYamlTmpl,
-	"bootstrap/otel_stats.yaml.tmpl":                         bootstrapOtel_statsYamlTmpl,
-	"bootstrap/server.yaml.tmpl":                             bootstrapServerYamlTmpl,
-	"bootstrap/stats.yaml.tmpl":                              bootstrapStatsYamlTmpl,
-	"listener/client.yaml.tmpl":                              listenerClientYamlTmpl,
-	"listener/client_passthrough.yaml.tmpl":                  listenerClient_passthroughYamlTmpl,
-	"listener/internal_outbound.yaml.tmpl":                   listenerInternal_outboundYamlTmpl,
-	"listener/server.yaml.tmpl":                              listenerServerYamlTmpl,
-	"listener/tcp_client.yaml.tmpl":                          listenerTcp_clientYamlTmpl,
-	"listener/tcp_passthrough.yaml.tmpl":                     listenerTcp_passthroughYamlTmpl,
-	"listener/tcp_server.yaml.tmpl":                          listenerTcp_serverYamlTmpl,
-	"listener/terminate_connect.yaml.tmpl":                   listenerTerminate_connectYamlTmpl,
+	"bootstrap/client.yaml.tmpl":            bootstrapClientYamlTmpl,
+	"bootstrap/otel_stats.yaml.tmpl":        bootstrapOtel_statsYamlTmpl,
+	"bootstrap/server.yaml.tmpl":            bootstrapServerYamlTmpl,
+	"bootstrap/stats.yaml.tmpl":             bootstrapStatsYamlTmpl,
+	"listener/client.yaml.tmpl":             listenerClientYamlTmpl,
+	"listener/client_passthrough.yaml.tmpl": listenerClient_passthroughYamlTmpl,
+	"listener/internal_outbound.yaml.tmpl":  listenerInternal_outboundYamlTmpl,
+	"listener/server.yaml.tmpl":             listenerServerYamlTmpl,
+	"listener/tcp_client.yaml.tmpl":         listenerTcp_clientYamlTmpl,
+	"listener/tcp_passthrough.yaml.tmpl":    listenerTcp_passthroughYamlTmpl,
+	"listener/tcp_server.yaml.tmpl":         listenerTcp_serverYamlTmpl,
+	"listener/terminate_connect.yaml.tmpl":  listenerTerminate_connectYamlTmpl,
 }
 
 // AssetDir returns the file names below a certain
@@ -1096,11 +1001,10 @@ type bintree struct {
 
 var _bintree = &bintree{nil, map[string]*bintree{
 	"bootstrap": &bintree{nil, map[string]*bintree{
-		"client.yaml.tmpl":                             &bintree{bootstrapClientYamlTmpl, map[string]*bintree{}},
-		"client_cluster_metadata_precedence.yaml.tmpl": &bintree{bootstrapClient_cluster_metadata_precedenceYamlTmpl, map[string]*bintree{}},
-		"otel_stats.yaml.tmpl":                         &bintree{bootstrapOtel_statsYamlTmpl, map[string]*bintree{}},
-		"server.yaml.tmpl":                             &bintree{bootstrapServerYamlTmpl, map[string]*bintree{}},
-		"stats.yaml.tmpl":                              &bintree{bootstrapStatsYamlTmpl, map[string]*bintree{}},
+		"client.yaml.tmpl":     &bintree{bootstrapClientYamlTmpl, map[string]*bintree{}},
+		"otel_stats.yaml.tmpl": &bintree{bootstrapOtel_statsYamlTmpl, map[string]*bintree{}},
+		"server.yaml.tmpl":     &bintree{bootstrapServerYamlTmpl, map[string]*bintree{}},
+		"stats.yaml.tmpl":      &bintree{bootstrapStatsYamlTmpl, map[string]*bintree{}},
 	}},
 	"listener": &bintree{nil, map[string]*bintree{
 		"client.yaml.tmpl":             &bintree{listenerClientYamlTmpl, map[string]*bintree{}},

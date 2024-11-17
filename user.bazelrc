@@ -1,1 +1,1 @@
-build --override_repository=envoy=/home/hochacha/envoy
+build --override_repository=envoy=/envoy-openssl

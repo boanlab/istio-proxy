@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "source/extensions/filters/http/alpn/config.pb.h"
+#include "envoy/config/filter/http/alpn/v2alpha1/config.pb.h"
 #include "source/extensions/filters/http/common/factory_base.h"
 
 namespace Envoy {
@@ -28,7 +28,7 @@ namespace Alpn {
 class AlpnConfigFactory : public Server::Configuration::NamedHttpFilterConfigFactory {
 public:
   // Server::Configuration::NamedHttpFilterConfigFactory
-  absl::StatusOr<Http::FilterFactoryCb>
+  Http::FilterFactoryCb
   createFilterFactoryFromProto(const Protobuf::Message& config, const std::string& stat_prefix,
                                Server::Configuration::FactoryContext& context) override;
   ProtobufTypes::MessagePtr createEmptyConfigProto() override;

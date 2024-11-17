@@ -18,18 +18,29 @@ workspace(name = "io_istio_proxy")
 
 # http_archive is not a native function since bazel 0.19
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load(
+    "//bazel:repositories.bzl",
+    "istioapi_dependencies",
+)
+
+istioapi_dependencies()
+
+bind(
+    name = "boringssl_crypto",
+    actual = "//external:ssl",
+)
 
 # 1. Determine SHA256 `wget https://github.com/envoyproxy/envoy/archive/$COMMIT.tar.gz && sha256sum $COMMIT.tar.gz`
 # 2. Update .bazelversion, envoy.bazelrc and .bazelrc if needed.
 #
-# Commit date: 2024-08-31
-ENVOY_SHA = "7ffff7aa7390581bb02cbc6ebbbfa267fc7e1945"
+# Commit date: 2024-06-06
+ENVOY_SHA = "c6cd2f02a80aeef1e4ddac4b9408c6510887b229"
 
-ENVOY_SHA256 = "e40268bfe33e9ac87ef2fddb0ae7b7e0618a606e23d3ec9fbcf3a7f444cf58c7"
+ENVOY_SHA256 = "2804317867f5a65465f1d514dce6b6dd52e3c5a98a43efaf9b927f491a81472b"
 
-ENVOY_ORG = "boanlab"
+ENVOY_ORG = "envoyproxy"
 
-ENVOY_REPO = "envoy-openssl"
+ENVOY_REPO = "envoy"
 
 # To override with local envoy, just pass `--override_repository=envoy=/PATH/TO/ENVOY` to Bazel or
 # persist the option in `user.bazelrc`.

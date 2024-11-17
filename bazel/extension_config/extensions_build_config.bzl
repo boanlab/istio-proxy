@@ -7,7 +7,6 @@ ENVOY_EXTENSIONS = {
 
     "envoy.access_loggers.file":                        "//source/extensions/access_loggers/file:config",
     "envoy.access_loggers.extension_filters.cel":       "//source/extensions/access_loggers/filters/cel:config",
-    "envoy.access_loggers.fluentd"  :                   "//source/extensions/access_loggers/fluentd:config",
     "envoy.access_loggers.http_grpc":                   "//source/extensions/access_loggers/grpc:http_config",
     "envoy.access_loggers.tcp_grpc":                    "//source/extensions/access_loggers/grpc:tcp_config",
     "envoy.access_loggers.open_telemetry":              "//source/extensions/access_loggers/open_telemetry:config",
@@ -96,11 +95,6 @@ ENVOY_EXTENSIONS = {
     "envoy.matching.actions.format_string":             "//source/extensions/matching/actions/format_string:config",
 
     #
-    # StringMatchers
-    #
-    "envoy.string_matcher.lua":                         "//source/extensions/string_matcher/lua:config",
-
-    #
     # HTTP filters
     #
 
@@ -110,7 +104,6 @@ ENVOY_EXTENSIONS = {
     "envoy.filters.http.aws_lambda":                    "//source/extensions/filters/http/aws_lambda:config",
     "envoy.filters.http.aws_request_signing":           "//source/extensions/filters/http/aws_request_signing:config",
     "envoy.filters.http.bandwidth_limit":               "//source/extensions/filters/http/bandwidth_limit:config",
-    "envoy.filters.http.basic_auth":                    "//source/extensions/filters/http/basic_auth:config",
     "envoy.filters.http.buffer":                        "//source/extensions/filters/http/buffer:config",
     "envoy.filters.http.cache":                         "//source/extensions/filters/http/cache:config",
     "envoy.filters.http.cdn_loop":                      "//source/extensions/filters/http/cdn_loop:config",
@@ -118,7 +111,6 @@ ENVOY_EXTENSIONS = {
     "envoy.filters.http.cors":                          "//source/extensions/filters/http/cors:config",
     "envoy.filters.http.composite":                     "//source/extensions/filters/http/composite:config",
     "envoy.filters.http.connect_grpc_bridge":           "//source/extensions/filters/http/connect_grpc_bridge:config",
-    "envoy.filters.http.credential_injector":           "//source/extensions/filters/http/credential_injector:config",
     "envoy.filters.http.csrf":                          "//source/extensions/filters/http/csrf:config",
     "envoy.filters.http.decompressor":                  "//source/extensions/filters/http/decompressor:config",
     "envoy.filters.http.dynamic_forward_proxy":         "//source/extensions/filters/http/dynamic_forward_proxy:config",
@@ -136,7 +128,6 @@ ENVOY_EXTENSIONS = {
     "envoy.filters.http.header_mutation":               "//source/extensions/filters/http/header_mutation:config",
     "envoy.filters.http.health_check":                  "//source/extensions/filters/http/health_check:config",
     "envoy.filters.http.ip_tagging":                    "//source/extensions/filters/http/ip_tagging:config",
-    "envoy.filters.http.json_to_metadata":              "//source/extensions/filters/http/json_to_metadata:config",
     "envoy.filters.http.jwt_authn":                     "//source/extensions/filters/http/jwt_authn:config",
     # Disabled by default
     "envoy.filters.http.kill_request":                  "//source/extensions/filters/http/kill_request:kill_request_config",
@@ -204,7 +195,6 @@ ENVOY_EXTENSIONS = {
 
     "envoy.resource_monitors.fixed_heap":               "//source/extensions/resource_monitors/fixed_heap:config",
     "envoy.resource_monitors.injected_resource":        "//source/extensions/resource_monitors/injected_resource:config",
-    "envoy.resource_monitors.downstream_connections":   "//source/extensions/resource_monitors/downstream_connections:config",
 
     #
     # Stat sinks
@@ -230,25 +220,13 @@ ENVOY_EXTENSIONS = {
     # Tracers
     #
 
+    "envoy.tracers.dynamic_ot":                         "//source/extensions/tracers/dynamic_ot:config",
     "envoy.tracers.datadog":                            "//source/extensions/tracers/datadog:config",
     "envoy.tracers.zipkin":                             "//source/extensions/tracers/zipkin:config",
+    "envoy.tracers.opencensus":                         "//source/extensions/tracers/opencensus:config",
     "envoy.tracers.xray":                               "//source/extensions/tracers/xray:config",
     "envoy.tracers.skywalking":                         "//source/extensions/tracers/skywalking:config",
     "envoy.tracers.opentelemetry":                      "//source/extensions/tracers/opentelemetry:config",
-
-    #
-    # OpenTelemetry Resource Detectors
-    #
-
-    "envoy.tracers.opentelemetry.resource_detectors.environment":   "//source/extensions/tracers/opentelemetry/resource_detectors/environment:config",
-    "envoy.tracers.opentelemetry.resource_detectors.dynatrace":     "//source/extensions/tracers/opentelemetry/resource_detectors/dynatrace:config",
-
-    #
-    # OpenTelemetry tracer samplers
-    #
-
-    "envoy.tracers.opentelemetry.samplers.always_on":       "//source/extensions/tracers/opentelemetry/samplers/always_on:config",
-    "envoy.tracers.opentelemetry.samplers.dynatrace":       "//source/extensions/tracers/opentelemetry/samplers/dynatrace:config",
 
     #
     # Transport sockets
@@ -260,7 +238,6 @@ ENVOY_EXTENSIONS = {
     "envoy.transport_sockets.tap":                      "//source/extensions/transport_sockets/tap:config",
     "envoy.transport_sockets.starttls":                 "//source/extensions/transport_sockets/starttls:config",
     "envoy.transport_sockets.tcp_stats":                "//source/extensions/transport_sockets/tcp_stats:config",
-    "envoy.transport_sockets.tls":                      "//source/extensions/transport_sockets/tls:config",
     "envoy.transport_sockets.internal_upstream":        "//source/extensions/transport_sockets/internal_upstream:config",
 
     #
@@ -311,6 +288,7 @@ ENVOY_EXTENSIONS = {
     "envoy.wasm.runtime.null":                          "//source/extensions/wasm_runtime/null:config",
     "envoy.wasm.runtime.v8":                            "//source/extensions/wasm_runtime/v8:config",
     "envoy.wasm.runtime.wamr":                          "//source/extensions/wasm_runtime/wamr:config",
+    "envoy.wasm.runtime.wavm":                          "//source/extensions/wasm_runtime/wavm:config",
     "envoy.wasm.runtime.wasmtime":                      "//source/extensions/wasm_runtime/wasmtime:config",
 
     #
@@ -435,19 +413,6 @@ ENVOY_EXTENSIONS = {
     "envoy.config_subscription.aggregated_grpc_collection":       "//source/extensions/config_subscription/grpc:grpc_collection_subscription_lib",
     "envoy.config_subscription.aggregated_delta_grpc_collection": "//source/extensions/config_subscription/grpc:grpc_collection_subscription_lib",
     "envoy.config_subscription.ads_collection":                   "//source/extensions/config_subscription/grpc:grpc_collection_subscription_lib",
-
-    #
-    # cluster specifier plugin
-    #
-
-    "envoy.router.cluster_specifier_plugin.lua": "//source/extensions/router/cluster_specifiers/lua:config",
-
-    #
-    # Injected credentials
-    #
-
-    "envoy.http.injected_credentials.generic":              "//source/extensions/http/injected_credentials/generic:config",
-    "envoy.http.injected_credentials.oauth2":               "//source/extensions/http/injected_credentials/oauth2:config",
 }
 
 ENVOY_CONTRIB_EXTENSIONS = {

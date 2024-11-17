@@ -1,0 +1,101 @@
+        91:	find library=libselinux.so.1 [0]; searching
+        91:	 search path=/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v4:/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v3:/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v2:/usr/local/bssl-compat/lib64/tls/x86_64/x86_64:/usr/local/bssl-compat/lib64/tls/x86_64:/usr/local/bssl-compat/lib64/tls/x86_64:/usr/local/bssl-compat/lib64/tls:/usr/local/bssl-compat/lib64/x86_64/x86_64:/usr/local/bssl-compat/lib64/x86_64:/usr/local/bssl-compat/lib64/x86_64:/usr/local/bssl-compat/lib64:/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v4:/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v3:/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v2:/usr/local/openssl-3.2.0/lib64/tls/x86_64/x86_64:/usr/local/openssl-3.2.0/lib64/tls/x86_64:/usr/local/openssl-3.2.0/lib64/tls/x86_64:/usr/local/openssl-3.2.0/lib64/tls:/usr/local/openssl-3.2.0/lib64/x86_64/x86_64:/usr/local/openssl-3.2.0/lib64/x86_64:/usr/local/openssl-3.2.0/lib64/x86_64:/usr/local/openssl-3.2.0/lib64:glibc-hwcaps/x86-64-v4:glibc-hwcaps/x86-64-v3:glibc-hwcaps/x86-64-v2:tls/x86_64/x86_64:tls/x86_64:tls/x86_64:tls:x86_64/x86_64:x86_64:x86_64:		(LD_LIBRARY_PATH)
+        91:	  trying file=/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v4/libselinux.so.1
+        91:	  trying file=/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v3/libselinux.so.1
+        91:	  trying file=/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v2/libselinux.so.1
+        91:	  trying file=/usr/local/bssl-compat/lib64/tls/x86_64/x86_64/libselinux.so.1
+        91:	  trying file=/usr/local/bssl-compat/lib64/tls/x86_64/libselinux.so.1
+        91:	  trying file=/usr/local/bssl-compat/lib64/tls/x86_64/libselinux.so.1
+        91:	  trying file=/usr/local/bssl-compat/lib64/tls/libselinux.so.1
+        91:	  trying file=/usr/local/bssl-compat/lib64/x86_64/x86_64/libselinux.so.1
+        91:	  trying file=/usr/local/bssl-compat/lib64/x86_64/libselinux.so.1
+        91:	  trying file=/usr/local/bssl-compat/lib64/x86_64/libselinux.so.1
+        91:	  trying file=/usr/local/bssl-compat/lib64/libselinux.so.1
+        91:	  trying file=/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v4/libselinux.so.1
+        91:	  trying file=/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v3/libselinux.so.1
+        91:	  trying file=/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v2/libselinux.so.1
+        91:	  trying file=/usr/local/openssl-3.2.0/lib64/tls/x86_64/x86_64/libselinux.so.1
+        91:	  trying file=/usr/local/openssl-3.2.0/lib64/tls/x86_64/libselinux.so.1
+        91:	  trying file=/usr/local/openssl-3.2.0/lib64/tls/x86_64/libselinux.so.1
+        91:	  trying file=/usr/local/openssl-3.2.0/lib64/tls/libselinux.so.1
+        91:	  trying file=/usr/local/openssl-3.2.0/lib64/x86_64/x86_64/libselinux.so.1
+        91:	  trying file=/usr/local/openssl-3.2.0/lib64/x86_64/libselinux.so.1
+        91:	  trying file=/usr/local/openssl-3.2.0/lib64/x86_64/libselinux.so.1
+        91:	  trying file=/usr/local/openssl-3.2.0/lib64/libselinux.so.1
+        91:	  trying file=glibc-hwcaps/x86-64-v4/libselinux.so.1
+        91:	  trying file=glibc-hwcaps/x86-64-v3/libselinux.so.1
+        91:	  trying file=glibc-hwcaps/x86-64-v2/libselinux.so.1
+        91:	  trying file=tls/x86_64/x86_64/libselinux.so.1
+        91:	  trying file=tls/x86_64/libselinux.so.1
+        91:	  trying file=tls/x86_64/libselinux.so.1
+        91:	  trying file=tls/libselinux.so.1
+        91:	  trying file=x86_64/x86_64/libselinux.so.1
+        91:	  trying file=x86_64/libselinux.so.1
+        91:	  trying file=x86_64/libselinux.so.1
+        91:	  trying file=libselinux.so.1
+        91:	 search cache=/etc/ld.so.cache
+        91:	  trying file=/lib/x86_64-linux-gnu/libselinux.so.1
+        91:	
+        91:	find library=libc.so.6 [0]; searching
+        91:	 search path=/usr/local/bssl-compat/lib64:/usr/local/openssl-3.2.0/lib64:glibc-hwcaps/x86-64-v4:glibc-hwcaps/x86-64-v3:glibc-hwcaps/x86-64-v2:tls/x86_64/x86_64:tls/x86_64:tls/x86_64:tls:x86_64/x86_64:x86_64:x86_64:		(LD_LIBRARY_PATH)
+        91:	  trying file=/usr/local/bssl-compat/lib64/libc.so.6
+        91:	  trying file=/usr/local/openssl-3.2.0/lib64/libc.so.6
+        91:	  trying file=glibc-hwcaps/x86-64-v4/libc.so.6
+        91:	  trying file=glibc-hwcaps/x86-64-v3/libc.so.6
+        91:	  trying file=glibc-hwcaps/x86-64-v2/libc.so.6
+        91:	  trying file=tls/x86_64/x86_64/libc.so.6
+        91:	  trying file=tls/x86_64/libc.so.6
+        91:	  trying file=tls/x86_64/libc.so.6
+        91:	  trying file=tls/libc.so.6
+        91:	  trying file=x86_64/x86_64/libc.so.6
+        91:	  trying file=x86_64/libc.so.6
+        91:	  trying file=x86_64/libc.so.6
+        91:	  trying file=libc.so.6
+        91:	 search cache=/etc/ld.so.cache
+        91:	  trying file=/lib/x86_64-linux-gnu/libc.so.6
+        91:	
+        91:	find library=libpcre2-8.so.0 [0]; searching
+        91:	 search path=/usr/local/bssl-compat/lib64:/usr/local/openssl-3.2.0/lib64:glibc-hwcaps/x86-64-v4:glibc-hwcaps/x86-64-v3:glibc-hwcaps/x86-64-v2:tls/x86_64/x86_64:tls/x86_64:tls/x86_64:tls:x86_64/x86_64:x86_64:x86_64:		(LD_LIBRARY_PATH)
+        91:	  trying file=/usr/local/bssl-compat/lib64/libpcre2-8.so.0
+        91:	  trying file=/usr/local/openssl-3.2.0/lib64/libpcre2-8.so.0
+        91:	  trying file=glibc-hwcaps/x86-64-v4/libpcre2-8.so.0
+        91:	  trying file=glibc-hwcaps/x86-64-v3/libpcre2-8.so.0
+        91:	  trying file=glibc-hwcaps/x86-64-v2/libpcre2-8.so.0
+        91:	  trying file=tls/x86_64/x86_64/libpcre2-8.so.0
+        91:	  trying file=tls/x86_64/libpcre2-8.so.0
+        91:	  trying file=tls/x86_64/libpcre2-8.so.0
+        91:	  trying file=tls/libpcre2-8.so.0
+        91:	  trying file=x86_64/x86_64/libpcre2-8.so.0
+        91:	  trying file=x86_64/libpcre2-8.so.0
+        91:	  trying file=x86_64/libpcre2-8.so.0
+        91:	  trying file=libpcre2-8.so.0
+        91:	 search cache=/etc/ld.so.cache
+        91:	  trying file=/lib/x86_64-linux-gnu/libpcre2-8.so.0
+        91:	
+        91:	
+        91:	calling init: /lib64/ld-linux-x86-64.so.2
+        91:	
+        91:	
+        91:	calling init: /lib/x86_64-linux-gnu/libc.so.6
+        91:	
+        91:	
+        91:	calling init: /lib/x86_64-linux-gnu/libpcre2-8.so.0
+        91:	
+        91:	
+        91:	calling init: /lib/x86_64-linux-gnu/libselinux.so.1
+        91:	
+        91:	
+        91:	initialize program: ls
+        91:	
+        91:	
+        91:	transferring control: ls
+        91:	
+        91:	
+        91:	calling fini: ls [0]
+        91:	
+        91:	
+        91:	calling fini: /lib/x86_64-linux-gnu/libselinux.so.1 [0]
+        91:	
+        91:	
+        91:	calling fini: /lib/x86_64-linux-gnu/libpcre2-8.so.0 [0]
+        91:	

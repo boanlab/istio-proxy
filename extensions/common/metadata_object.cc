@@ -16,7 +16,6 @@
 
 #include "absl/strings/str_join.h"
 #include "flatbuffers/flatbuffers.h"
-#include "extensions/common/node_info_bfbs_generated.h"
 #include "source/common/common/hash.h"
 
 namespace Istio {
@@ -101,7 +100,7 @@ WorkloadMetadataObject WorkloadMetadataObject::fromBaggage(absl::string_view bag
     }
   }
   return WorkloadMetadataObject(instance, cluster, namespace_name, workload, canonical_name,
-                                canonical_revision, app_name, app_version, workload_type, "");
+                                canonical_revision, app_name, app_version, workload_type);
 }
 
 std::string WorkloadMetadataObject::baggage() const {
@@ -184,15 +183,13 @@ std::string_view toStdStringView(absl::string_view view) {
 std::string convertWorkloadMetadataToFlatNode(const WorkloadMetadataObject& obj) {
   flatbuffers::FlatBufferBuilder fbb;
 
-  flatbuffers::Offset<flatbuffers::String> name, cluster, namespace_, workload_name, owner,
-      identity;
+  flatbuffers::Offset<flatbuffers::String> name, cluster, namespace_, workload_name, owner;
   std::vector<flatbuffers::Offset<Wasm::Common::KeyVal>> labels;
 
   name = fbb.CreateString(toStdStringView(obj.instance_name_));
   namespace_ = fbb.CreateString(toStdStringView(obj.namespace_name_));
   cluster = fbb.CreateString(toStdStringView(obj.cluster_name_));
   workload_name = fbb.CreateString(toStdStringView(obj.workload_name_));
-  identity = fbb.CreateString(toStdStringView(obj.identity_));
 
   switch (obj.workload_type_) {
   case WorkloadType::Deployment:
@@ -214,14 +211,14 @@ std::string convertWorkloadMetadataToFlatNode(const WorkloadMetadataObject& obj)
   }
 
   labels.push_back(
-      Wasm::Common::CreateKeyVal(fbb, fbb.CreateString(CanonicalNameLabel),
+      Wasm::Common::CreateKeyVal(fbb, fbb.CreateString("service.istio.io/canonical-name"),
                                  fbb.CreateString(toStdStringView(obj.canonical_name_))));
   labels.push_back(
-      Wasm::Common::CreateKeyVal(fbb, fbb.CreateString(CanonicalRevisionLabel),
+      Wasm::Common::CreateKeyVal(fbb, fbb.CreateString("service.istio.io/canonical-revision"),
                                  fbb.CreateString(toStdStringView(obj.canonical_revision_))));
-  labels.push_back(Wasm::Common::CreateKeyVal(fbb, fbb.CreateString(AppLabel),
+  labels.push_back(Wasm::Common::CreateKeyVal(fbb, fbb.CreateString("app"),
                                               fbb.CreateString(toStdStringView(obj.app_name_))));
-  labels.push_back(Wasm::Common::CreateKeyVal(fbb, fbb.CreateString(VersionLabel),
+  labels.push_back(Wasm::Common::CreateKeyVal(fbb, fbb.CreateString("version"),
                                               fbb.CreateString(toStdStringView(obj.app_version_))));
 
   auto labels_offset = fbb.CreateVectorOfSortedTables(&labels);
@@ -232,7 +229,6 @@ std::string convertWorkloadMetadataToFlatNode(const WorkloadMetadataObject& obj)
   node.add_workload_name(workload_name);
   node.add_owner(owner);
   node.add_labels(labels_offset);
-  node.add_identity(identity);
   auto data = node.Finish();
   fbb.Finish(data);
   auto fb = fbb.Release();
@@ -244,7 +240,6 @@ WorkloadMetadataObject convertFlatNodeToWorkloadMetadata(const Wasm::Common::Fla
   const absl::string_view cluster = toAbslStringView(node.cluster_id());
   const absl::string_view workload = toAbslStringView(node.workload_name());
   const absl::string_view namespace_name = toAbslStringView(node.namespace_());
-  const absl::string_view identity = toAbslStringView(node.identity());
   const auto* labels = node.labels();
 
   absl::string_view canonical_name;
@@ -252,19 +247,19 @@ WorkloadMetadataObject convertFlatNodeToWorkloadMetadata(const Wasm::Common::Fla
   absl::string_view app_name;
   absl::string_view app_version;
   if (labels) {
-    const auto* name_iter = labels->LookupByKey(CanonicalNameLabel);
+    const auto* name_iter = labels->LookupByKey("service.istio.io/canonical-name");
     const auto* name = name_iter ? name_iter->value() : nullptr;
     canonical_name = toAbslStringView(name);
 
-    const auto* revision_iter = labels->LookupByKey(CanonicalRevisionLabel);
+    const auto* revision_iter = labels->LookupByKey("service.istio.io/canonical-revision");
     const auto* revision = revision_iter ? revision_iter->value() : nullptr;
     canonical_revision = toAbslStringView(revision);
 
-    const auto* app_iter = labels->LookupByKey(AppLabel);
+    const auto* app_iter = labels->LookupByKey("app");
     const auto* app = app_iter ? app_iter->value() : nullptr;
     app_name = toAbslStringView(app);
 
-    const auto* version_iter = labels->LookupByKey(VersionLabel);
+    const auto* version_iter = labels->LookupByKey("version");
     const auto* version = version_iter ? version_iter->value() : nullptr;
     app_version = toAbslStringView(version);
   }
@@ -299,7 +294,7 @@ WorkloadMetadataObject convertFlatNodeToWorkloadMetadata(const Wasm::Common::Fla
   }
 
   return WorkloadMetadataObject(instance, cluster, namespace_name, workload, canonical_name,
-                                canonical_revision, app_name, app_version, workload_type, identity);
+                                canonical_revision, app_name, app_version, workload_type);
 }
 
 absl::optional<WorkloadMetadataObject>
@@ -310,12 +305,7 @@ convertEndpointMetadata(const std::string& endpoint_encoding) {
   }
   // TODO: we cannot determine workload type from the encoding.
   return absl::make_optional<WorkloadMetadataObject>("", parts[4], parts[1], parts[0], parts[2],
-                                                     parts[3], "", "", WorkloadType::Pod, "");
-}
-
-std::string_view nodeInfoSchema() {
-  return std::string_view(reinterpret_cast<const char*>(Wasm::Common::FlatNodeBinarySchema::data()),
-                          Wasm::Common::FlatNodeBinarySchema::size());
+                                                     parts[3], "", "", WorkloadType::Pod);
 }
 
 } // namespace Common

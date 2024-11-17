@@ -15,10 +15,14 @@
 ################################################################################
 #
 
+licenses(["notice"])
+
 load(
     "@envoy//bazel:envoy_build_system.bzl",
+    "envoy_cc_benchmark_binary",
     "envoy_cc_library",
     "envoy_cc_test",
+    "envoy_package",
 )
 load(
     "@com_github_google_flatbuffers//:build_defs.bzl",
@@ -28,11 +32,28 @@ load(
 load(
     "@envoy//test/extensions:extensions_build_system.bzl",
     "envoy_extension_cc_benchmark_binary",
+    "envoy_extension_cc_test",
 )
 
-package(default_visibility = ["//visibility:public"])
+envoy_package()
 
-licenses(["notice"])
+envoy_cc_library(
+    name = "context",
+    srcs = [
+        "context.cc",
+    ],
+    hdrs = [
+        "context.h",
+        "istio_dimensions.h",
+    ],
+    repository = "@envoy",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":node_info_fb_cc",
+        ":util",
+        "@proxy_wasm_cpp_host//:null_lib",
+    ],
+)
 
 envoy_cc_library(
     name = "proto_util",
@@ -43,8 +64,8 @@ envoy_cc_library(
         "proto_util.h",
     ],
     repository = "@envoy",
+    visibility = ["//visibility:public"],
     deps = [
-        ":metadata_object_lib",
         ":node_info_fb_cc",
         ":util",
         "@com_google_protobuf//:protobuf",
@@ -61,20 +82,30 @@ envoy_cc_library(
         "util.h",
     ],
     repository = "@envoy",
+    visibility = ["//visibility:public"],
     deps = [
         "@proxy_wasm_cpp_host//:null_lib",
     ],
 )
 
-envoy_cc_test(
+envoy_cc_library(
+    name = "istio_dimensions",
+    hdrs = [
+        "istio_dimensions.h",
+    ],
+    repository = "@envoy",
+    visibility = ["//visibility:public"],
+)
+
+envoy_extension_cc_test(
     name = "proto_util_test",
     size = "small",
     srcs = ["proto_util_test.cc"],
+    extension_names = ["envoy.wasm.runtime.null"],
     repository = "@envoy",
     deps = [
         ":node_info_fb_cc",
         ":proto_util",
-        "@com_google_protobuf//:protobuf",
     ],
 )
 
@@ -88,29 +119,33 @@ envoy_cc_test(
     ],
 )
 
-# TODO: fix this build on mac m1?
+envoy_cc_test(
+    name = "istio_dimensions_test",
+    size = "small",
+    srcs = ["istio_dimensions_test.cc"],
+    external_deps = ["abseil_hash_testing"],
+    repository = "@envoy",
+    deps = [
+        ":istio_dimensions",
+    ],
+)
+
 envoy_extension_cc_benchmark_binary(
     name = "proto_util_speed_test",
-    srcs = select({
-        "@envoy//bazel:linux": ["proto_util_speed_test.cc"],
-        "//conditions:default": [],
-    }),
+    srcs = ["proto_util_speed_test.cc"],
     extension_names = ["envoy.wasm.runtime.null"],
     external_deps = [
         "benchmark",
     ],
     repository = "@envoy",
-    deps = select({
-        "@envoy//bazel:linux": [
-            ":metadata_object_lib",
-            ":node_info_fb_cc",
-            ":proto_util",
-            "@envoy//source/common/stream_info:filter_state_lib",
-            "@envoy//source/extensions/filters/common/expr:cel_state_lib",
-            "@envoy//test/test_common:status_utility_lib",
-        ],
-        "//conditions:default": [],
-    }),
+    deps = [
+        ":metadata_object_lib",
+        ":node_info_fb_cc",
+        ":proto_util",
+        "@envoy//source/common/stream_info:filter_state_lib",
+        "@envoy//source/extensions/filters/common/expr:cel_state_lib",
+        "@envoy//test/test_common:status_utility_lib",
+    ],
 )
 
 flatbuffer_library_public(
@@ -137,20 +172,32 @@ cc_library(
 )
 
 envoy_cc_library(
+    name = "json_util",
+    srcs = [
+        "//extensions/common/wasm:json_util.cc",
+    ],
+    hdrs = [
+        "//extensions/common/wasm:json_util.h",
+    ],
+    repository = "@envoy",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_nlohmann_json//:json",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/types:optional",
+    ],
+)
+
+envoy_cc_library(
     name = "metadata_object_lib",
     srcs = ["metadata_object.cc"],
     hdrs = ["metadata_object.h"],
     repository = "@envoy",
+    visibility = ["//visibility:public"],
     deps = [
         ":node_info_fb_cc",
-        "@com_github_google_flatbuffers//:flatbuffers",
-        "@com_google_absl//absl/strings",
-        "@com_google_absl//absl/types:optional",
-        "@envoy//envoy/common:hashable_interface",
         "@envoy//envoy/network:filter_interface",
-        "@envoy//envoy/ssl:connection_interface",
-        "@envoy//envoy/stream_info:filter_state_interface",
-        "@envoy//source/common/common:hash_lib",
+        "@envoy//source/exe:envoy_common_lib",
     ],
 )
 

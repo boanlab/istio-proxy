@@ -1,0 +1,125 @@
+       102:	find library=libbfd-2.38-system.so [0]; searching
+       102:	 search path=/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v4:/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v3:/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v2:/usr/local/bssl-compat/lib64/tls/x86_64/x86_64:/usr/local/bssl-compat/lib64/tls/x86_64:/usr/local/bssl-compat/lib64/tls/x86_64:/usr/local/bssl-compat/lib64/tls:/usr/local/bssl-compat/lib64/x86_64/x86_64:/usr/local/bssl-compat/lib64/x86_64:/usr/local/bssl-compat/lib64/x86_64:/usr/local/bssl-compat/lib64:/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v4:/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v3:/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v2:/usr/local/openssl-3.2.0/lib64/tls/x86_64/x86_64:/usr/local/openssl-3.2.0/lib64/tls/x86_64:/usr/local/openssl-3.2.0/lib64/tls/x86_64:/usr/local/openssl-3.2.0/lib64/tls:/usr/local/openssl-3.2.0/lib64/x86_64/x86_64:/usr/local/openssl-3.2.0/lib64/x86_64:/usr/local/openssl-3.2.0/lib64/x86_64:/usr/local/openssl-3.2.0/lib64:glibc-hwcaps/x86-64-v4:glibc-hwcaps/x86-64-v3:glibc-hwcaps/x86-64-v2:tls/x86_64/x86_64:tls/x86_64:tls/x86_64:tls:x86_64/x86_64:x86_64:x86_64:		(LD_LIBRARY_PATH)
+       102:	  trying file=/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v4/libbfd-2.38-system.so
+       102:	  trying file=/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v3/libbfd-2.38-system.so
+       102:	  trying file=/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v2/libbfd-2.38-system.so
+       102:	  trying file=/usr/local/bssl-compat/lib64/tls/x86_64/x86_64/libbfd-2.38-system.so
+       102:	  trying file=/usr/local/bssl-compat/lib64/tls/x86_64/libbfd-2.38-system.so
+       102:	  trying file=/usr/local/bssl-compat/lib64/tls/x86_64/libbfd-2.38-system.so
+       102:	  trying file=/usr/local/bssl-compat/lib64/tls/libbfd-2.38-system.so
+       102:	  trying file=/usr/local/bssl-compat/lib64/x86_64/x86_64/libbfd-2.38-system.so
+       102:	  trying file=/usr/local/bssl-compat/lib64/x86_64/libbfd-2.38-system.so
+       102:	  trying file=/usr/local/bssl-compat/lib64/x86_64/libbfd-2.38-system.so
+       102:	  trying file=/usr/local/bssl-compat/lib64/libbfd-2.38-system.so
+       102:	  trying file=/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v4/libbfd-2.38-system.so
+       102:	  trying file=/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v3/libbfd-2.38-system.so
+       102:	  trying file=/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v2/libbfd-2.38-system.so
+       102:	  trying file=/usr/local/openssl-3.2.0/lib64/tls/x86_64/x86_64/libbfd-2.38-system.so
+       102:	  trying file=/usr/local/openssl-3.2.0/lib64/tls/x86_64/libbfd-2.38-system.so
+       102:	  trying file=/usr/local/openssl-3.2.0/lib64/tls/x86_64/libbfd-2.38-system.so
+       102:	  trying file=/usr/local/openssl-3.2.0/lib64/tls/libbfd-2.38-system.so
+       102:	  trying file=/usr/local/openssl-3.2.0/lib64/x86_64/x86_64/libbfd-2.38-system.so
+       102:	  trying file=/usr/local/openssl-3.2.0/lib64/x86_64/libbfd-2.38-system.so
+       102:	  trying file=/usr/local/openssl-3.2.0/lib64/x86_64/libbfd-2.38-system.so
+       102:	  trying file=/usr/local/openssl-3.2.0/lib64/libbfd-2.38-system.so
+       102:	  trying file=glibc-hwcaps/x86-64-v4/libbfd-2.38-system.so
+       102:	  trying file=glibc-hwcaps/x86-64-v3/libbfd-2.38-system.so
+       102:	  trying file=glibc-hwcaps/x86-64-v2/libbfd-2.38-system.so
+       102:	  trying file=tls/x86_64/x86_64/libbfd-2.38-system.so
+       102:	  trying file=tls/x86_64/libbfd-2.38-system.so
+       102:	  trying file=tls/x86_64/libbfd-2.38-system.so
+       102:	  trying file=tls/libbfd-2.38-system.so
+       102:	  trying file=x86_64/x86_64/libbfd-2.38-system.so
+       102:	  trying file=x86_64/libbfd-2.38-system.so
+       102:	  trying file=x86_64/libbfd-2.38-system.so
+       102:	  trying file=libbfd-2.38-system.so
+       102:	 search cache=/etc/ld.so.cache
+       102:	  trying file=/lib/x86_64-linux-gnu/libbfd-2.38-system.so
+       102:	
+       102:	find library=libc.so.6 [0]; searching
+       102:	 search path=/usr/local/bssl-compat/lib64:/usr/local/openssl-3.2.0/lib64:glibc-hwcaps/x86-64-v4:glibc-hwcaps/x86-64-v3:glibc-hwcaps/x86-64-v2:tls/x86_64/x86_64:tls/x86_64:tls/x86_64:tls:x86_64/x86_64:x86_64:x86_64:		(LD_LIBRARY_PATH)
+       102:	  trying file=/usr/local/bssl-compat/lib64/libc.so.6
+       102:	  trying file=/usr/local/openssl-3.2.0/lib64/libc.so.6
+       102:	  trying file=glibc-hwcaps/x86-64-v4/libc.so.6
+       102:	  trying file=glibc-hwcaps/x86-64-v3/libc.so.6
+       102:	  trying file=glibc-hwcaps/x86-64-v2/libc.so.6
+       102:	  trying file=tls/x86_64/x86_64/libc.so.6
+       102:	  trying file=tls/x86_64/libc.so.6
+       102:	  trying file=tls/x86_64/libc.so.6
+       102:	  trying file=tls/libc.so.6
+       102:	  trying file=x86_64/x86_64/libc.so.6
+       102:	  trying file=x86_64/libc.so.6
+       102:	  trying file=x86_64/libc.so.6
+       102:	  trying file=libc.so.6
+       102:	 search cache=/etc/ld.so.cache
+       102:	  trying file=/lib/x86_64-linux-gnu/libc.so.6
+       102:	
+       102:	find library=libz.so.1 [0]; searching
+       102:	 search path=/usr/local/bssl-compat/lib64:/usr/local/openssl-3.2.0/lib64:glibc-hwcaps/x86-64-v4:glibc-hwcaps/x86-64-v3:glibc-hwcaps/x86-64-v2:tls/x86_64/x86_64:tls/x86_64:tls/x86_64:tls:x86_64/x86_64:x86_64:x86_64:		(LD_LIBRARY_PATH)
+       102:	  trying file=/usr/local/bssl-compat/lib64/libz.so.1
+       102:	  trying file=/usr/local/openssl-3.2.0/lib64/libz.so.1
+       102:	  trying file=glibc-hwcaps/x86-64-v4/libz.so.1
+       102:	  trying file=glibc-hwcaps/x86-64-v3/libz.so.1
+       102:	  trying file=glibc-hwcaps/x86-64-v2/libz.so.1
+       102:	  trying file=tls/x86_64/x86_64/libz.so.1
+       102:	  trying file=tls/x86_64/libz.so.1
+       102:	  trying file=tls/x86_64/libz.so.1
+       102:	  trying file=tls/libz.so.1
+       102:	  trying file=x86_64/x86_64/libz.so.1
+       102:	  trying file=x86_64/libz.so.1
+       102:	  trying file=x86_64/libz.so.1
+       102:	  trying file=libz.so.1
+       102:	 search cache=/etc/ld.so.cache
+       102:	  trying file=/lib/x86_64-linux-gnu/libz.so.1
+       102:	
+       102:	
+       102:	calling init: /lib64/ld-linux-x86-64.so.2
+       102:	
+       102:	
+       102:	calling init: /lib/x86_64-linux-gnu/libc.so.6
+       102:	
+       102:	
+       102:	calling init: /lib/x86_64-linux-gnu/libz.so.1
+       102:	
+       102:	
+       102:	calling init: /lib/x86_64-linux-gnu/libbfd-2.38-system.so
+       102:	
+       102:	
+       102:	initialize program: nm
+       102:	
+       102:	
+       102:	transferring control: nm
+       102:	
+       102:	
+       102:	calling init: /usr/bin/../lib/x86_64-linux-gnu/bfd-plugins/libdep.so
+       102:	
+       102:	
+       102:	calling fini: /usr/bin/../lib/x86_64-linux-gnu/bfd-plugins/libdep.so [0]
+       102:	
+       102:	
+       102:	calling init: /usr/bin/../bin/../lib/bfd-plugins/liblto_plugin.so
+       102:	
+       102:	
+       102:	calling fini: /usr/bin/../bin/../lib/bfd-plugins/liblto_plugin.so [0]
+       102:	
+       102:	
+       102:	calling init: /usr/bin/../bin/../lib/bfd-plugins/liblto_plugin.so
+       102:	
+       102:	
+       102:	calling fini: /usr/bin/../bin/../lib/bfd-plugins/liblto_plugin.so [0]
+       102:	
+       102:	
+       102:	calling init: /usr/bin/../lib/x86_64-linux-gnu/bfd-plugins/libdep.so
+       102:	
+       102:	
+       102:	calling fini: /usr/bin/../lib/x86_64-linux-gnu/bfd-plugins/libdep.so [0]
+       102:	
+       102:	
+       102:	calling fini: nm [0]
+       102:	
+       102:	
+       102:	calling fini: /lib/x86_64-linux-gnu/libbfd-2.38-system.so [0]
+       102:	
+       102:	
+       102:	calling fini: /lib/x86_64-linux-gnu/libz.so.1 [0]
+       102:	

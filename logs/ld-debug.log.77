@@ -1,0 +1,219 @@
+        77:	find library=libtinfo.so.6 [0]; searching
+        77:	 search path=/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v4:/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v3:/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v2:/usr/local/bssl-compat/lib64/tls/x86_64/x86_64:/usr/local/bssl-compat/lib64/tls/x86_64:/usr/local/bssl-compat/lib64/tls/x86_64:/usr/local/bssl-compat/lib64/tls:/usr/local/bssl-compat/lib64/x86_64/x86_64:/usr/local/bssl-compat/lib64/x86_64:/usr/local/bssl-compat/lib64/x86_64:/usr/local/bssl-compat/lib64:/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v4:/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v3:/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v2:/usr/local/openssl-3.2.0/lib64/tls/x86_64/x86_64:/usr/local/openssl-3.2.0/lib64/tls/x86_64:/usr/local/openssl-3.2.0/lib64/tls/x86_64:/usr/local/openssl-3.2.0/lib64/tls:/usr/local/openssl-3.2.0/lib64/x86_64/x86_64:/usr/local/openssl-3.2.0/lib64/x86_64:/usr/local/openssl-3.2.0/lib64/x86_64:/usr/local/openssl-3.2.0/lib64:glibc-hwcaps/x86-64-v4:glibc-hwcaps/x86-64-v3:glibc-hwcaps/x86-64-v2:tls/x86_64/x86_64:tls/x86_64:tls/x86_64:tls:x86_64/x86_64:x86_64:x86_64:		(LD_LIBRARY_PATH)
+        77:	  trying file=/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v4/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v3/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v2/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/tls/x86_64/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/tls/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/tls/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/tls/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/x86_64/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v4/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v3/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v2/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/tls/x86_64/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/tls/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/tls/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/tls/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/x86_64/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/libtinfo.so.6
+        77:	  trying file=glibc-hwcaps/x86-64-v4/libtinfo.so.6
+        77:	  trying file=glibc-hwcaps/x86-64-v3/libtinfo.so.6
+        77:	  trying file=glibc-hwcaps/x86-64-v2/libtinfo.so.6
+        77:	  trying file=tls/x86_64/x86_64/libtinfo.so.6
+        77:	  trying file=tls/x86_64/libtinfo.so.6
+        77:	  trying file=tls/x86_64/libtinfo.so.6
+        77:	  trying file=tls/libtinfo.so.6
+        77:	  trying file=x86_64/x86_64/libtinfo.so.6
+        77:	  trying file=x86_64/libtinfo.so.6
+        77:	  trying file=x86_64/libtinfo.so.6
+        77:	  trying file=libtinfo.so.6
+        77:	 search cache=/etc/ld.so.cache
+        77:	  trying file=/lib/x86_64-linux-gnu/libtinfo.so.6
+        77:	
+        77:	find library=libc.so.6 [0]; searching
+        77:	 search path=/usr/local/bssl-compat/lib64:/usr/local/openssl-3.2.0/lib64:glibc-hwcaps/x86-64-v4:glibc-hwcaps/x86-64-v3:glibc-hwcaps/x86-64-v2:tls/x86_64/x86_64:tls/x86_64:tls/x86_64:tls:x86_64/x86_64:x86_64:x86_64:		(LD_LIBRARY_PATH)
+        77:	  trying file=/usr/local/bssl-compat/lib64/libc.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/libc.so.6
+        77:	  trying file=glibc-hwcaps/x86-64-v4/libc.so.6
+        77:	  trying file=glibc-hwcaps/x86-64-v3/libc.so.6
+        77:	  trying file=glibc-hwcaps/x86-64-v2/libc.so.6
+        77:	  trying file=tls/x86_64/x86_64/libc.so.6
+        77:	  trying file=tls/x86_64/libc.so.6
+        77:	  trying file=tls/x86_64/libc.so.6
+        77:	  trying file=tls/libc.so.6
+        77:	  trying file=x86_64/x86_64/libc.so.6
+        77:	  trying file=x86_64/libc.so.6
+        77:	  trying file=x86_64/libc.so.6
+        77:	  trying file=libc.so.6
+        77:	 search cache=/etc/ld.so.cache
+        77:	  trying file=/lib/x86_64-linux-gnu/libc.so.6
+        77:	
+        77:	
+        77:	calling init: /lib64/ld-linux-x86-64.so.2
+        77:	
+        77:	
+        77:	calling init: /lib/x86_64-linux-gnu/libc.so.6
+        77:	
+        77:	
+        77:	calling init: /lib/x86_64-linux-gnu/libtinfo.so.6
+        77:	
+        77:	
+        77:	initialize program: bash
+        77:	
+        77:	
+        77:	transferring control: bash
+        77:	
+        77:	find library=libtinfo.so.6 [0]; searching
+        77:	 search path=/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v4:/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v3:/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v2:/usr/local/bssl-compat/lib64/tls/x86_64/x86_64:/usr/local/bssl-compat/lib64/tls/x86_64:/usr/local/bssl-compat/lib64/tls/x86_64:/usr/local/bssl-compat/lib64/tls:/usr/local/bssl-compat/lib64/x86_64/x86_64:/usr/local/bssl-compat/lib64/x86_64:/usr/local/bssl-compat/lib64/x86_64:/usr/local/bssl-compat/lib64:/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v4:/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v3:/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v2:/usr/local/openssl-3.2.0/lib64/tls/x86_64/x86_64:/usr/local/openssl-3.2.0/lib64/tls/x86_64:/usr/local/openssl-3.2.0/lib64/tls/x86_64:/usr/local/openssl-3.2.0/lib64/tls:/usr/local/openssl-3.2.0/lib64/x86_64/x86_64:/usr/local/openssl-3.2.0/lib64/x86_64:/usr/local/openssl-3.2.0/lib64/x86_64:/usr/local/openssl-3.2.0/lib64:glibc-hwcaps/x86-64-v4:glibc-hwcaps/x86-64-v3:glibc-hwcaps/x86-64-v2:tls/x86_64/x86_64:tls/x86_64:tls/x86_64:tls:x86_64/x86_64:x86_64:x86_64:		(LD_LIBRARY_PATH)
+        77:	  trying file=/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v4/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v3/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v2/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/tls/x86_64/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/tls/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/tls/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/tls/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/x86_64/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v4/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v3/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v2/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/tls/x86_64/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/tls/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/tls/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/tls/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/x86_64/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/libtinfo.so.6
+        77:	  trying file=glibc-hwcaps/x86-64-v4/libtinfo.so.6
+        77:	  trying file=glibc-hwcaps/x86-64-v3/libtinfo.so.6
+        77:	  trying file=glibc-hwcaps/x86-64-v2/libtinfo.so.6
+        77:	  trying file=tls/x86_64/x86_64/libtinfo.so.6
+        77:	  trying file=tls/x86_64/libtinfo.so.6
+        77:	  trying file=tls/x86_64/libtinfo.so.6
+        77:	  trying file=tls/libtinfo.so.6
+        77:	  trying file=x86_64/x86_64/libtinfo.so.6
+        77:	  trying file=x86_64/libtinfo.so.6
+        77:	  trying file=x86_64/libtinfo.so.6
+        77:	  trying file=libtinfo.so.6
+        77:	 search cache=/etc/ld.so.cache
+        77:	  trying file=/lib/x86_64-linux-gnu/libtinfo.so.6
+        77:	
+        77:	find library=libc.so.6 [0]; searching
+        77:	 search path=/usr/local/bssl-compat/lib64:/usr/local/openssl-3.2.0/lib64:glibc-hwcaps/x86-64-v4:glibc-hwcaps/x86-64-v3:glibc-hwcaps/x86-64-v2:tls/x86_64/x86_64:tls/x86_64:tls/x86_64:tls:x86_64/x86_64:x86_64:x86_64:		(LD_LIBRARY_PATH)
+        77:	  trying file=/usr/local/bssl-compat/lib64/libc.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/libc.so.6
+        77:	  trying file=glibc-hwcaps/x86-64-v4/libc.so.6
+        77:	  trying file=glibc-hwcaps/x86-64-v3/libc.so.6
+        77:	  trying file=glibc-hwcaps/x86-64-v2/libc.so.6
+        77:	  trying file=tls/x86_64/x86_64/libc.so.6
+        77:	  trying file=tls/x86_64/libc.so.6
+        77:	  trying file=tls/x86_64/libc.so.6
+        77:	  trying file=tls/libc.so.6
+        77:	  trying file=x86_64/x86_64/libc.so.6
+        77:	  trying file=x86_64/libc.so.6
+        77:	  trying file=x86_64/libc.so.6
+        77:	  trying file=libc.so.6
+        77:	 search cache=/etc/ld.so.cache
+        77:	  trying file=/lib/x86_64-linux-gnu/libc.so.6
+        77:	
+        77:	
+        77:	calling init: /lib64/ld-linux-x86-64.so.2
+        77:	
+        77:	
+        77:	calling init: /lib/x86_64-linux-gnu/libc.so.6
+        77:	
+        77:	
+        77:	calling init: /lib/x86_64-linux-gnu/libtinfo.so.6
+        77:	
+        77:	
+        77:	initialize program: bash
+        77:	
+        77:	
+        77:	transferring control: bash
+        77:	
+        77:	
+        77:	calling fini: bash [0]
+        77:	
+        77:	
+        77:	calling fini: /lib/x86_64-linux-gnu/libtinfo.so.6 [0]
+        77:	
+        77:	find library=libtinfo.so.6 [0]; searching
+        77:	 search path=/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v4:/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v3:/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v2:/usr/local/bssl-compat/lib64/tls/x86_64/x86_64:/usr/local/bssl-compat/lib64/tls/x86_64:/usr/local/bssl-compat/lib64/tls/x86_64:/usr/local/bssl-compat/lib64/tls:/usr/local/bssl-compat/lib64/x86_64/x86_64:/usr/local/bssl-compat/lib64/x86_64:/usr/local/bssl-compat/lib64/x86_64:/usr/local/bssl-compat/lib64:/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v4:/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v3:/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v2:/usr/local/openssl-3.2.0/lib64/tls/x86_64/x86_64:/usr/local/openssl-3.2.0/lib64/tls/x86_64:/usr/local/openssl-3.2.0/lib64/tls/x86_64:/usr/local/openssl-3.2.0/lib64/tls:/usr/local/openssl-3.2.0/lib64/x86_64/x86_64:/usr/local/openssl-3.2.0/lib64/x86_64:/usr/local/openssl-3.2.0/lib64/x86_64:/usr/local/openssl-3.2.0/lib64:glibc-hwcaps/x86-64-v4:glibc-hwcaps/x86-64-v3:glibc-hwcaps/x86-64-v2:tls/x86_64/x86_64:tls/x86_64:tls/x86_64:tls:x86_64/x86_64:x86_64:x86_64:		(LD_LIBRARY_PATH)
+        77:	  trying file=/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v4/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v3/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/glibc-hwcaps/x86-64-v2/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/tls/x86_64/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/tls/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/tls/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/tls/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/x86_64/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/bssl-compat/lib64/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v4/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v3/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/glibc-hwcaps/x86-64-v2/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/tls/x86_64/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/tls/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/tls/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/tls/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/x86_64/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/x86_64/libtinfo.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/libtinfo.so.6
+        77:	  trying file=glibc-hwcaps/x86-64-v4/libtinfo.so.6
+        77:	  trying file=glibc-hwcaps/x86-64-v3/libtinfo.so.6
+        77:	  trying file=glibc-hwcaps/x86-64-v2/libtinfo.so.6
+        77:	  trying file=tls/x86_64/x86_64/libtinfo.so.6
+        77:	  trying file=tls/x86_64/libtinfo.so.6
+        77:	  trying file=tls/x86_64/libtinfo.so.6
+        77:	  trying file=tls/libtinfo.so.6
+        77:	  trying file=x86_64/x86_64/libtinfo.so.6
+        77:	  trying file=x86_64/libtinfo.so.6
+        77:	  trying file=x86_64/libtinfo.so.6
+        77:	  trying file=libtinfo.so.6
+        77:	 search cache=/etc/ld.so.cache
+        77:	  trying file=/lib/x86_64-linux-gnu/libtinfo.so.6
+        77:	
+        77:	find library=libc.so.6 [0]; searching
+        77:	 search path=/usr/local/bssl-compat/lib64:/usr/local/openssl-3.2.0/lib64:glibc-hwcaps/x86-64-v4:glibc-hwcaps/x86-64-v3:glibc-hwcaps/x86-64-v2:tls/x86_64/x86_64:tls/x86_64:tls/x86_64:tls:x86_64/x86_64:x86_64:x86_64:		(LD_LIBRARY_PATH)
+        77:	  trying file=/usr/local/bssl-compat/lib64/libc.so.6
+        77:	  trying file=/usr/local/openssl-3.2.0/lib64/libc.so.6
+        77:	  trying file=glibc-hwcaps/x86-64-v4/libc.so.6
+        77:	  trying file=glibc-hwcaps/x86-64-v3/libc.so.6
+        77:	  trying file=glibc-hwcaps/x86-64-v2/libc.so.6
+        77:	  trying file=tls/x86_64/x86_64/libc.so.6
+        77:	  trying file=tls/x86_64/libc.so.6
+        77:	  trying file=tls/x86_64/libc.so.6
+        77:	  trying file=tls/libc.so.6
+        77:	  trying file=x86_64/x86_64/libc.so.6
+        77:	  trying file=x86_64/libc.so.6
+        77:	  trying file=x86_64/libc.so.6
+        77:	  trying file=libc.so.6
+        77:	 search cache=/etc/ld.so.cache
+        77:	  trying file=/lib/x86_64-linux-gnu/libc.so.6
+        77:	
+        77:	
+        77:	calling init: /lib64/ld-linux-x86-64.so.2
+        77:	
+        77:	
+        77:	calling init: /lib/x86_64-linux-gnu/libc.so.6
+        77:	
+        77:	
+        77:	calling init: /lib/x86_64-linux-gnu/libtinfo.so.6
+        77:	
+        77:	
+        77:	initialize program: bash
+        77:	
+        77:	
+        77:	transferring control: bash
+        77:	

@@ -21,11 +21,10 @@ load(
     "@envoy//bazel:envoy_build_system.bzl",
     "envoy_cc_library",
     "envoy_cc_test",
+    "envoy_package",
 )
 
-package(default_visibility = ["//visibility:public"])
-
-licenses(["notice"])
+envoy_package()
 
 envoy_cc_library(
     name = "metadata_exchange",
@@ -39,7 +38,7 @@ envoy_cc_library(
     ],
     repository = "@envoy",
     deps = [
-        "//extensions/common:metadata_object_lib",
+        "//extensions/common:context",
         "//extensions/common:proto_util",
         "//source/extensions/common/workload_discovery:api_lib",
         "//source/extensions/filters/network/metadata_exchange/config:metadata_exchange_cc_proto",
@@ -66,6 +65,7 @@ envoy_cc_library(
     srcs = ["config.cc"],
     hdrs = ["config.h"],
     repository = "@envoy",
+    visibility = ["//visibility:public"],
     deps = [
         ":metadata_exchange",
         "//source/extensions/filters/network/metadata_exchange/config:metadata_exchange_cc_proto",

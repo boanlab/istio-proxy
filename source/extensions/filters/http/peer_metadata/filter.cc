@@ -16,6 +16,7 @@
 
 #include "envoy/registry/registry.h"
 #include "envoy/server/factory_context.h"
+#include "extensions/common/context.h"
 #include "extensions/common/metadata_object.h"
 #include "extensions/common/proto_util.h"
 #include "source/common/common/hash.h"
@@ -42,7 +43,7 @@ public:
 struct CelPrototypeValues {
   const Filters::Common::Expr::CelStatePrototype NodeInfo{
       true, Filters::Common::Expr::CelStateType::FlatBuffers,
-      toAbslStringView(Istio::Common::nodeInfoSchema()),
+      toAbslStringView(Wasm::Common::nodeInfoSchema()),
       // Life span is only needed for Wasm set_property, not in the native filters.
       StreamInfo::FilterState::LifeSpan::FilterChain};
   const Filters::Common::Expr::CelStatePrototype NodeId{
@@ -52,6 +53,12 @@ struct CelPrototypeValues {
 };
 
 using CelPrototypes = ConstSingleton<CelPrototypeValues>;
+
+class BaggageMethod : public DiscoveryMethod {
+public:
+  absl::optional<PeerInfo> derivePeerInfo(const StreamInfo::StreamInfo&, Http::HeaderMap&,
+                                          Context&) const override;
+};
 
 class XDSMethod : public DiscoveryMethod {
 public:
@@ -65,6 +72,18 @@ private:
   const bool downstream_;
   Extensions::Common::WorkloadDiscovery::WorkloadMetadataProviderSharedPtr metadata_provider_;
 };
+
+absl::optional<PeerInfo> BaggageMethod::derivePeerInfo(const StreamInfo::StreamInfo&,
+                                                       Http::HeaderMap& headers, Context&) const {
+  const auto header_string =
+      Http::HeaderUtility::getAllOfHeaderAsString(headers, Headers::get().Baggage);
+  const auto result = header_string.result();
+  if (result) {
+    const auto metadata_object = Istio::Common::WorkloadMetadataObject::fromBaggage(*result);
+    return Istio::Common::convertWorkloadMetadataToFlatNode(metadata_object);
+  }
+  return {};
+}
 
 absl::optional<PeerInfo> XDSMethod::derivePeerInfo(const StreamInfo::StreamInfo& info,
                                                    Http::HeaderMap&, Context&) const {
@@ -220,15 +239,18 @@ std::vector<DiscoveryMethodPtr> FilterConfig::buildDiscoveryMethods(
   methods.reserve(config.size());
   for (const auto& method : config) {
     switch (method.method_specifier_case()) {
+    case io::istio::http::peer_metadata::Config::DiscoveryMethod::MethodSpecifierCase::kBaggage:
+      methods.push_back(std::make_unique<BaggageMethod>());
+      break;
     case io::istio::http::peer_metadata::Config::DiscoveryMethod::MethodSpecifierCase::
         kWorkloadDiscovery:
       methods.push_back(
-          std::make_unique<XDSMethod>(downstream, factory_context.serverFactoryContext()));
+          std::make_unique<XDSMethod>(downstream, factory_context.getServerFactoryContext()));
       break;
     case io::istio::http::peer_metadata::Config::DiscoveryMethod::MethodSpecifierCase::
         kIstioHeaders:
       methods.push_back(
-          std::make_unique<MXMethod>(downstream, factory_context.serverFactoryContext()));
+          std::make_unique<MXMethod>(downstream, factory_context.getServerFactoryContext()));
       break;
     default:
       break;
@@ -248,7 +270,7 @@ std::vector<PropagationMethodPtr> FilterConfig::buildPropagationMethods(
     case io::istio::http::peer_metadata::Config::PropagationMethod::MethodSpecifierCase::
         kIstioHeaders:
       methods.push_back(std::make_unique<MXPropagationMethod>(
-          downstream, factory_context.serverFactoryContext(), method.istio_headers()));
+          downstream, factory_context.getServerFactoryContext(), method.istio_headers()));
       break;
     default:
       break;
@@ -297,8 +319,7 @@ void FilterConfig::injectUpstream(const StreamInfo::StreamInfo& info,
 
 void FilterConfig::setFilterState(StreamInfo::StreamInfo& info, bool downstream,
                                   const std::string& value) const {
-  const absl::string_view key =
-      downstream ? Istio::Common::WasmDownstreamPeer : Istio::Common::WasmUpstreamPeer;
+  const absl::string_view key = downstream ? WasmDownstreamPeer : WasmUpstreamPeer;
   if (!info.filterState()->hasDataWithName(key)) {
     auto node_info = std::make_unique<CelStateHashable>(CelPrototypes::get().NodeInfo);
     node_info->setValue(value);
@@ -310,8 +331,7 @@ void FilterConfig::setFilterState(StreamInfo::StreamInfo& info, bool downstream,
   }
   // This is needed because stats filter awaits for the prefix on the wire and checks for the key
   // presence before emitting any telemetry.
-  const absl::string_view id_key =
-      downstream ? Istio::Common::WasmDownstreamPeerID : Istio::Common::WasmUpstreamPeerID;
+  const absl::string_view id_key = downstream ? WasmDownstreamPeerID : WasmUpstreamPeerID;
   if (!info.filterState()->hasDataWithName(id_key)) {
     auto node_id = std::make_unique<Filters::Common::Expr::CelState>(CelPrototypes::get().NodeId);
     node_id->setValue("unknown");
@@ -354,11 +374,10 @@ Http::FilterHeadersStatus Filter::encodeHeaders(Http::ResponseHeaderMap& headers
   return Http::FilterHeadersStatus::Continue;
 }
 
-absl::StatusOr<Http::FilterFactoryCb> FilterConfigFactory::createFilterFactoryFromProto(
-    const Protobuf::Message& config, const std::string&,
+Http::FilterFactoryCb FilterConfigFactory::createFilterFactoryFromProtoTyped(
+    const io::istio::http::peer_metadata::Config& config, const std::string&,
     Server::Configuration::FactoryContext& factory_context) {
-  auto filter_config = std::make_shared<FilterConfig>(
-      dynamic_cast<const io::istio::http::peer_metadata::Config&>(config), factory_context);
+  auto filter_config = std::make_shared<FilterConfig>(config, factory_context);
   return [filter_config](Http::FilterChainFactoryCallbacks& callbacks) {
     auto filter = std::make_shared<Filter>(filter_config);
     callbacks.addStreamFilter(filter);
