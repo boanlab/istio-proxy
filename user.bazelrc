@@ -1,1 +1,1 @@
-build --override_repository=envoy=/envoy-openssl
+build --override_repository=envoy=/envoy
