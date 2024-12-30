@@ -6,7 +6,6 @@ docker/envoy
 *.test
 /artifacts
 clang.bazelrc
-user.bazelrc
 compile_commands.json
 test/envoye2e/tcp_metadata_exchange/testoutput
 test/envoye2e/http_metadata_exchange/testoutput
@@ -18,3 +17,11 @@ test/envoye2e/http_metadata_exchange/testoutput
 /extensions/common/proxy_expr.h
 /extensions/common/nlohmann_json.hpp
 out/
+
+/ssl-backup/
+init.sh
+move.sh
+envoy
+libbssl-compat.so
+b_libssl.so
+b_libcrypto.so

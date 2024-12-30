@@ -38,7 +38,7 @@ ENVOY_SHA = "c6cd2f02a80aeef1e4ddac4b9408c6510887b229"
 
 ENVOY_SHA256 = "2804317867f5a65465f1d514dce6b6dd52e3c5a98a43efaf9b927f491a81472b"
 
-ENVOY_ORG = "envoyproxy"
+ENVOY_ORG = "boanlab"
 
 ENVOY_REPO = "envoy"
 
