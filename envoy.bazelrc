@@ -8,13 +8,29 @@
 # leave room for compiler/linker.
 # The number 3G is chosen heuristically to both support large VM and small VM with RBE.
 # Startup options cannot be selected via config.
-startup --host_jvm_args=-Xmx3g
+# startup --host_jvm_args=-Xmx3g
 
 fetch --color=yes
 run --color=yes
 
+
+startup --host_jvm_args=-Xmx64g  # 메모리 증가
+startup --host_jvm_args=-XX:+UseG1GC
+startup --host_jvm_args=-XX:MaxGCPauseMillis=100
+startup --host_jvm_args=-XX:ParallelGCThreads=32  # 코어 수에 맞춤
+startup --host_jvm_args=-XX:ConcGCThreads=16      # ParallelGCThreads의 1/2
+startup --host_jvm_args=-XX:G1HeapRegionSize=32m  # 큰 힙에 최적화
+
+# 빌드 리소스 설정
+build --local_ram_resources=HOST_RAM*.8  # 120GB로 증가
+build --local_cpu_resources=HOST_CPUS
+build --jobs=HOST_CPUS
+build --loading_phase_threads=HOST_CPUS
+build --spawn_strategy=local
+build --experimental_ui_max_stdouterr_bytes=2097152
 build --color=yes
-build --jobs=HOST_CPUS-1
+
+# build --jobs=HOST_CPUS-1
 build --workspace_status_command="bash bazel/get_workspace_status"
 build --incompatible_strict_action_env
 build --java_runtime_version=remotejdk_11
@@ -69,6 +85,7 @@ build:linux --fission=dbg,opt
 build:linux --features=per_object_debug_info
 build:linux --action_env=BAZEL_LINKLIBS=-l%:libstdc++.a
 build:linux --action_env=BAZEL_LINKOPTS=-lm
+
 
 # We already have absl in the build, define absl=1 to tell googletest to use absl for backtrace.
 build --define absl=1
@@ -547,5 +564,15 @@ try-import %workspace%/user.bazelrc
 try-import %workspace%/local_tsan.bazelrc
 
 common --define=boringssl=fips
+common --@envoy//bazel:http3=False
 build --build_tag_filters=-nofips
 test --test_tag_filters=-nofips
+
+build:linux --copt=-O3
+build:linux --copt=-fomit-frame-pointer
+build:linux --copt=-ffast-math         # 부동소수점 연산 최적화
+build:linux --copt=-funroll-loops      # 루프 언롤링
+
+# build:linux --copt=-flto                # 링크 타임 최적화
+# build:linux --features=thin_lto
+# build:linux --copt=-finline-functions
